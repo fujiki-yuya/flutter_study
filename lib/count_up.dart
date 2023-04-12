@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CountUp extends StatefulWidget {
-  const CountUp({Key? key}) : super(key: key);
+class CountUpScreen extends StatefulWidget {
+  const CountUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<CountUp> createState() => _CountUpState();
+  State<CountUpScreen> createState() => _CountUpScreenState();
 }
 
-class _CountUpState extends State<CountUp> {
+class _CountUpScreenState extends State<CountUpScreen> {
   int _counter = 0;
 
   void _incrementCounter() {
@@ -19,11 +19,11 @@ class _CountUpState extends State<CountUp> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text("エラー"),
-                content: const Text("100が上限です"),
+                title: const Text('エラー'),
+                content: const Text('100が上限です'),
                 actions: [
                   TextButton(
-                    child: const Text("OK"),
+                    child: const Text('OK'),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -38,18 +38,13 @@ class _CountUpState extends State<CountUp> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("カウントアップ"),
+        title: const Text('カウントアップ'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
+            child: Text(
               '$_counter',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-          ],
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
