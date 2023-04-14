@@ -13,7 +13,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
   final TextEditingController _taskController = TextEditingController();
 
   void _addTask() {
-    if (_taskInput.isNotEmpty) {
+    //　未入力であればリスト追加できず、追加済みのテキストと同じテキストは追加できない
+    if (_taskInput.isNotEmpty && !_taskList.contains(_taskInput)) {
       setState(() {
         _taskList.add(_taskInput);
         _taskInput = '';
