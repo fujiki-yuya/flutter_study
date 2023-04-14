@@ -29,6 +29,41 @@ class _TodoListScreenState extends State<TodoListScreen> {
     });
   }
 
+  //　テキストを押すと編集できる
+  Future<void> _editTask(int index) async {
+    TextEditingController editController =
+        TextEditingController(text: _taskList[index]);
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('編集'),
+          content: TextField(
+            controller: editController,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _taskList[index] = editController.text;
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('保存'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('キャンセル'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +107,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(_taskList[index]),
+                  onTap: () => _editTask(index),
                   trailing: IconButton(
                     icon: const Text('削除'),
                     onPressed: () => _removeTask(index),
