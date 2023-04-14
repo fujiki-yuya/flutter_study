@@ -13,10 +13,18 @@ class _TodoListScreenState extends State<TodoListScreen> {
   final TextEditingController _taskController = TextEditingController();
 
   void _addTask() {
+    if (_taskInput.isNotEmpty) {
+      setState(() {
+        _taskList.add(_taskInput);
+        _taskInput = '';
+        _taskController.clear();
+      });
+    }
+  }
+
+  void _removeTask(int index) {
     setState(() {
-      _taskList.add(_taskInput);
-      _taskInput = '';
-      _taskController.clear();
+      _taskList.removeAt(index);
     });
   }
 
@@ -63,6 +71,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(_taskList[index]),
+                  trailing: IconButton(
+                    icon: const Text('削除'),
+                    onPressed: () => _removeTask(index),
+                  ),
                 );
               },
             ),
