@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class StopWatchScreen extends StatefulWidget {
-  const StopWatchScreen({Key? key}) : super(key: key);
+class StopwatchScreen extends StatefulWidget {
+  const StopwatchScreen({Key? key}) : super(key: key);
 
   @override
-  State<StopWatchScreen> createState() => _StopWatchScreenState();
+  State<StopwatchScreen> createState() => _StopwatchScreenState();
 }
 
-class _StopWatchScreenState extends State<StopWatchScreen> {
+class _StopwatchScreenState extends State<StopwatchScreen> {
+  final _stopWatchTimer = StopWatchTimer();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,16 +21,26 @@ class _StopWatchScreenState extends State<StopWatchScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '00:00.000',
-                style: TextStyle(fontSize: 40),
+              StreamBuilder<int>(
+                stream: _stopWatchTimer.rawTime,
+                initialData: _stopWatchTimer.rawTime.value,
+                builder: (context, snapshot) {
+                  final value = snapshot.data;
+                  final displayTime =
+                      StopWatchTimer.getDisplayTime(value!, hours: false);
+                  return Text(
+                    displayTime,
+                    style: const TextStyle(fontSize: 60),
+                  );
+                },
               ),
               const SizedBox(
                 height: 20,
               ),
               ElevatedButton(
                 onPressed: () {
-                  //スタートを押した時の処理
+                  //タイマースタート処理
+                  _stopWatchTimer.onStartTimer();
                 },
                 child: const Text('スタート'),
               ),
@@ -36,7 +49,8 @@ class _StopWatchScreenState extends State<StopWatchScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  //ストップを押した時の処理
+                  //タイマーストップ処理
+                  _stopWatchTimer.onStopTimer();
                 },
                 child: const Text('ストップ'),
               ),
@@ -45,7 +59,8 @@ class _StopWatchScreenState extends State<StopWatchScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  //リセットを押した時の処理
+                  //タイマーリセット処理
+                  _stopWatchTimer.onResetTimer();
                 },
                 child: const Text('リセット'),
               ),
