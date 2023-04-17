@@ -62,10 +62,19 @@ class TodoListScreenState extends State<TodoListScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                setState(() {
-                  _taskList[index] = editController.text;
-                });
-                Navigator.of(context).pop();
+                // 同じタスク名が存在しない場合にのみ、タスクを更新
+                if (!_taskList.contains(editController.text)) {
+                  setState(() {
+                    _taskList[index] = editController.text;
+                  });
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('このタスクはすでに追加されています'),
+                    ),
+                  );
+                }
               },
               child: const Text('保存'),
             ),
