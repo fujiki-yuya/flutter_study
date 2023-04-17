@@ -20,6 +20,23 @@ class _TodoListScreenState extends State<TodoListScreen> {
         _taskInput = '';
         _taskController.clear();
       });
+    } else if (_taskList.contains(_taskInput)) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('エラー'),
+              content: const Text('このタスクはすでに追加されています。'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                )
+              ],
+            );
+          });
     }
   }
 
@@ -30,11 +47,11 @@ class _TodoListScreenState extends State<TodoListScreen> {
   }
 
   //　テキストを押すと編集できる
-  Future<void> _editTask(int index) async {
+  void _editTask(int index) {
     TextEditingController editController =
         TextEditingController(text: _taskList[index]);
 
-    await showDialog(
+    showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -73,7 +90,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(60.0),
+            padding: const EdgeInsets.all(30),
             child: Row(
               children: [
                 Expanded(
@@ -88,9 +105,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
                       labelText: 'タスクを入力してください',
                     ),
                   ),
-                ),
-                const SizedBox(
-                  width: 10,
                 ),
                 FloatingActionButton(
                   onPressed: _addTask,
