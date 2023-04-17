@@ -4,10 +4,10 @@ class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
 
   @override
-  _TodoListScreenState createState() => _TodoListScreenState();
+  TodoListScreenState createState() => TodoListScreenState();
 }
 
-class _TodoListScreenState extends State<TodoListScreen> {
+class TodoListScreenState extends State<TodoListScreen> {
   String _taskInput = '';
   final List<String> _taskList = [];
   final TextEditingController _taskController = TextEditingController();
