@@ -47,8 +47,9 @@ class TodoListScreenState extends State<TodoListScreen> {
 
   //　テキストを押すと編集できる
   void _editTask(int index) {
+    String selectTask = _taskList[index];
     TextEditingController editController =
-        TextEditingController(text: _taskList[index]);
+        TextEditingController(text: selectTask);
 
     showDialog(
       context: context,
@@ -64,7 +65,7 @@ class TodoListScreenState extends State<TodoListScreen> {
                 // 同じタスク名が存在しない場合にのみ、タスクを更新
                 if (!_taskList.contains(editController.text)) {
                   setState(() {
-                    _taskList[index] = editController.text;
+                    selectTask = editController.text;
                   });
                   Navigator.of(context).pop();
                 } else {
@@ -122,8 +123,9 @@ class TodoListScreenState extends State<TodoListScreen> {
             child: ListView.builder(
               itemCount: _taskList.length,
               itemBuilder: (context, index) {
+                String task = _taskList[index];
                 return ListTile(
-                  title: Text(_taskList[index]),
+                  title: Text(task),
                   onTap: () => _editTask(index),
                   trailing: IconButton(
                     icon: const Text('削除'),
