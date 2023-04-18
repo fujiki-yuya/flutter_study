@@ -8,19 +8,18 @@ class TodoListScreen extends StatefulWidget {
 }
 
 class TodoListScreenState extends State<TodoListScreen> {
-  String _taskInput = '';
   final List<String> _taskList = [];
   final TextEditingController _taskController = TextEditingController();
 
   void _addTask() {
     //　未入力であればリスト追加できず、追加済みのテキストと同じテキストは追加できない
-    if (_taskInput.isNotEmpty && !_taskList.contains(_taskInput)) {
+    if (_taskController.text.isNotEmpty &&
+        !_taskList.contains(_taskController.text)) {
       setState(() {
-        _taskList.add(_taskInput);
-        _taskInput = '';
+        _taskList.add(_taskController.text);
         _taskController.clear();
       });
-    } else if (_taskList.contains(_taskInput)) {
+    } else if (_taskList.contains(_taskController.text)) {
       showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -104,11 +103,6 @@ class TodoListScreenState extends State<TodoListScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _taskInput = value;
-                      });
-                    },
                     controller: _taskController,
                     decoration: const InputDecoration(
                       labelText: 'タスクを入力してください',
