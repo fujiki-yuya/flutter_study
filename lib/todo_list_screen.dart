@@ -29,39 +29,40 @@ class TodoListScreenState extends State<TodoListScreen> {
   void _editTask(int index) {
     TextEditingController editController =
         TextEditingController(text: _taskList[index]);
+    GlobalKey<FormState> editFormKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('編集'),
-          content: TextFormField(
-            controller: editController,
+          content: Form(
+            key: editFormKey,
+            child: TextFormField(
+              controller: editController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'タスクを入力してください';
+                } else if (_taskList.contains(value) &&
+                    value != _taskList[index]) {
+                  return 'このタスクはすでに追加されています。';
+                } else {
+                  return null;
+                }
+              },
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                // 同じタスク名が存在しない場合にのみ、タスクを更新
-                if (!_taskList.contains(editController.text)) {
+                if (editFormKey.currentState!.validate()) {
                   setState(() {
                     _taskList[index] = editController.text;
                   });
                   Navigator.of(context).pop();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('このタスクはすでに追加されています'),
-                    ),
-                  );
                 }
               },
               child: const Text('保存'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('キャンセル'),
             ),
           ],
         );
