@@ -9,34 +9,14 @@ class TodoListScreen extends StatefulWidget {
 
 class TodoListScreenState extends State<TodoListScreen> {
   final List<String> _taskList = [];
-  final TextEditingController _taskController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _taskController = TextEditingController();
 
   void _addTask() {
-    //　未入力であればリスト追加できず、追加済みのテキストと同じテキストは追加できない
-    if (_taskController.text.isNotEmpty &&
-        !_taskList.contains(_taskController.text)) {
-      setState(() {
-        _taskList.add(_taskController.text);
-        _taskController.clear();
-      });
-    } else if (_taskList.contains(_taskController.text)) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('エラー'),
-              content: const Text('このタスクはすでに追加されています。'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                )
-              ],
-            );
-          });
-    }
+    setState(() {
+      _taskList.add(_taskController.text);
+      _taskController.clear();
+    });
   }
 
   void _removeTask(int index) {
@@ -47,16 +27,15 @@ class TodoListScreenState extends State<TodoListScreen> {
 
   //　テキストを押すと編集できる
   void _editTask(int index) {
-    String selectTask = _taskList[index];
     TextEditingController editController =
-        TextEditingController(text: selectTask);
+        TextEditingController(text: _taskList[index]);
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('編集'),
-          content: TextField(
+          content: TextFormField(
             controller: editController,
           ),
           actions: [
@@ -65,7 +44,7 @@ class TodoListScreenState extends State<TodoListScreen> {
                 // 同じタスク名が存在しない場合にのみ、タスクを更新
                 if (!_taskList.contains(editController.text)) {
                   setState(() {
-                    selectTask = editController.text;
+                    _taskList[index] = editController.text;
                   });
                   Navigator.of(context).pop();
                 } else {
@@ -99,24 +78,39 @@ class TodoListScreenState extends State<TodoListScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(30),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _taskController,
-                    decoration: const InputDecoration(
-                      labelText: 'タスクを入力してください',
+              padding: const EdgeInsets.all(30),
+              child: Form(
+                key: _formKey,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _taskController,
+                        decoration: const InputDecoration(
+                          labelText: 'タスクを入力してください',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'タスクを入力してください';
+                          } else if (_taskList.contains(value)) {
+                            return 'このタスクはすでに追加されています。';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
                     ),
-                  ),
+                    FloatingActionButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _addTask();
+                        }
+                      },
+                      child: const Text('追加'),
+                    ),
+                  ],
                 ),
-                FloatingActionButton(
-                  onPressed: _addTask,
-                  child: const Text('追加'),
-                ),
-              ],
-            ),
-          ),
+              )),
 
           // ToDoリストを表示する
           Expanded(
