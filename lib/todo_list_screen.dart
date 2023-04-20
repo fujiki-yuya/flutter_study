@@ -43,6 +43,8 @@ class TodoListScreenState extends State<TodoListScreen> {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'タスクを入力してください';
+
+                  //  編集したテキストが元のテキストと同じ場合はエラーメッセージの対象から除く
                 } else if (_taskList.contains(value) &&
                     value != _taskList[index]) {
                   return 'このタスクはすでに追加されています。';
@@ -76,62 +78,64 @@ class TodoListScreenState extends State<TodoListScreen> {
       appBar: AppBar(
         title: const Text('ToDoアプリ'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(32),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: TextFormField(
-                      controller: _taskController,
-                      decoration: const InputDecoration(
-                        labelText: 'タスクを入力してください',
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(32),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        controller: _taskController,
+                        decoration: const InputDecoration(
+                          labelText: 'タスクを入力してください',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'タスクを入力してください';
+                          } else if (_taskList.contains(value)) {
+                            return 'このタスクはすでに追加されています。';
+                          } else {
+                            return null;
+                          }
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'タスクを入力してください';
-                        } else if (_taskList.contains(value)) {
-                          return 'このタスクはすでに追加されています。';
-                        } else {
-                          return null;
-                        }
-                      },
                     ),
                   ),
-                ),
-                FloatingActionButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _addTask();
-                    }
-                  },
-                  child: const Text('追加'),
-                ),
-              ],
-            ),
-          ),
-
-          // ToDoリストを表示する
-          Expanded(
-            child: ListView.builder(
-              itemCount: _taskList.length,
-              itemBuilder: (context, index) {
-                final task = _taskList[index];
-                return ListTile(
-                  title: Text(task),
-                  onTap: () => _editTask(index),
-                  trailing: IconButton(
-                    icon: const Text('削除'),
-                    onPressed: () => _removeTask(index),
+                  FloatingActionButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _addTask();
+                      }
+                    },
+                    child: const Text('追加'),
                   ),
-                );
-              },
+                ],
+              ),
             ),
-          )
-        ],
+
+            // ToDoリストを表示する
+            Expanded(
+              child: ListView.builder(
+                itemCount: _taskList.length,
+                itemBuilder: (context, index) {
+                  final task = _taskList[index];
+                  return ListTile(
+                    title: Text(task),
+                    onTap: () => _editTask(index),
+                    trailing: IconButton(
+                      icon: const Text('削除'),
+                      onPressed: () => _removeTask(index),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
