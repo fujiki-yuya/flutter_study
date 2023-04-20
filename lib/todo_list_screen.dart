@@ -44,6 +44,7 @@ class TodoListScreenState extends State<TodoListScreen> {
                 if (value == null || value.isEmpty) {
                   return 'タスクを入力してください';
 
+                  //　編集せずに保存した場合にエラーを表示しないように
                   //  編集したテキストが元のテキストと同じ場合はエラーメッセージの対象から除く
                 } else if (_taskList.contains(value) &&
                     value != _taskList[index]) {
