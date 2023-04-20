@@ -11,12 +11,14 @@ class TodoListScreenState extends State<TodoListScreen> {
   final List<String> _taskList = [];
   final _formKey = GlobalKey<FormState>();
   final _taskController = TextEditingController();
+  TextEditingController editController = TextEditingController();
+  GlobalKey<FormState> editFormKey = GlobalKey<FormState>();
 
   void _addTask() {
     setState(() {
       _taskList.add(_taskController.text);
-      _taskController.clear();
     });
+    _taskController.clear();
   }
 
   void _removeTask(int index) {
@@ -27,9 +29,7 @@ class TodoListScreenState extends State<TodoListScreen> {
 
   //　テキストを押すと編集できる
   void _editTask(int index) {
-    TextEditingController editController =
-        TextEditingController(text: _taskList[index]);
-    GlobalKey<FormState> editFormKey = GlobalKey<FormState>();
+    editController.text = _taskList[index];
 
     showDialog(
       context: context,
