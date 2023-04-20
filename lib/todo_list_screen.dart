@@ -80,11 +80,11 @@ class TodoListScreenState extends State<TodoListScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(32),
-            child: Form(
-              key: _formKey,
-              child: Row(
-                children: [
-                  Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Form(
+                    key: _formKey,
                     child: TextFormField(
                       controller: _taskController,
                       decoration: const InputDecoration(
@@ -101,16 +101,16 @@ class TodoListScreenState extends State<TodoListScreen> {
                       },
                     ),
                   ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _addTask();
-                      }
-                    },
-                    child: const Text('追加'),
-                  ),
-                ],
-              ),
+                ),
+                FloatingActionButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _addTask();
+                    }
+                  },
+                  child: const Text('追加'),
+                ),
+              ],
             ),
           ),
 
