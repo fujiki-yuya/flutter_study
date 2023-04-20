@@ -79,7 +79,7 @@ class TodoListScreenState extends State<TodoListScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(30),
+            padding: const EdgeInsets.all(32),
             child: Form(
               key: _formKey,
               child: Row(
