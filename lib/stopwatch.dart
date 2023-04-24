@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class StopwatchScreen extends StatefulWidget {
-  const StopwatchScreen({Key? key}) : super(key: key);
+  const StopwatchScreen({super.key});
 
   @override
-  State<StopwatchScreen> createState() => _StopwatchScreenState();
+  State<StopwatchScreen> createState() => StopwatchScreenState();
 }
 
-class _StopwatchScreenState extends State<StopwatchScreen> {
+class StopwatchScreenState extends State<StopwatchScreen> {
   final _stopWatchTimer = StopWatchTimer();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('ストップウォッチ'),
-        ),
-        body: Center(
+      appBar: AppBar(
+        title: const Text('ストップウォッチ'),
+      ),
+      body: SafeArea(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -25,17 +26,16 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
                 stream: _stopWatchTimer.rawTime,
                 initialData: _stopWatchTimer.rawTime.value,
                 builder: (context, snapshot) {
-                  final value = snapshot.data;
                   final displayTime =
-                      StopWatchTimer.getDisplayTime(value!, hours: false);
+                      StopWatchTimer.getDisplayTime(snapshot.data!);
                   return Text(
                     displayTime,
-                    style: const TextStyle(fontSize: 60),
+                    style: const TextStyle(fontSize: 64),
                   );
                 },
               ),
               const SizedBox(
-                height: 20,
+                height: 24,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -45,7 +45,7 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
                 child: const Text('スタート'),
               ),
               const SizedBox(
-                height: 20,
+                height: 24,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -55,7 +55,7 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
                 child: const Text('ストップ'),
               ),
               const SizedBox(
-                height: 20,
+                height: 24,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -66,6 +66,8 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
               ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
