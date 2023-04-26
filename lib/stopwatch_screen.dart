@@ -24,7 +24,8 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 1), (Timer timer) {
       setState(() {
-        _displayTime = _formatTime(_stopwatch.elapsedMilliseconds);
+        _displayTime =
+            _formatTime(Duration(milliseconds: _stopwatch.elapsedMilliseconds));
       });
     });
   }
@@ -43,11 +44,11 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     });
   }
 
-  String _formatTime(int milliseconds) {
-    int hundredths = (milliseconds / 10).truncate() % 100;
-    int seconds = (milliseconds / 1000).truncate() % 60;
-    int minutes = (milliseconds / 60000).truncate() % 60;
-    int hours = (milliseconds / 3600000).truncate();
+  String _formatTime(Duration elapsed) {
+    int hundredths = elapsed.inMilliseconds % 1000 ~/ 10;
+    int seconds = elapsed.inSeconds % 60;
+    int minutes = elapsed.inMinutes % 60;
+    int hours = elapsed.inHours;
 
     String formattedTime = '${hours.toString().padLeft(2, '0')}:'
         '${minutes.toString().padLeft(2, '0')}:'
@@ -100,4 +101,3 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     );
   }
 }
-
