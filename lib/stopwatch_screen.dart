@@ -9,6 +9,8 @@ class StopwatchScreen extends StatefulWidget {
   State<StopwatchScreen> createState() => StopwatchScreenState();
 }
 
+const SizedBox spacer = SizedBox(height: 24);
+
 class StopwatchScreenState extends State<StopwatchScreen> {
   final Stopwatch _stopwatch = Stopwatch();
   late Timer _timer;
@@ -70,27 +72,21 @@ class StopwatchScreenState extends State<StopwatchScreen> {
                 _displayTime,
                 style: const TextStyle(fontSize: 40),
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              spacer,
               ElevatedButton(
                 onPressed:
                     //タイマースタート処理
                     _startStopwatch,
                 child: const Text('スタート'),
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              spacer,
               ElevatedButton(
                 onPressed:
                     //タイマーストップ処理
                     _stopStopwatch,
                 child: const Text('ストップ'),
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              spacer,
               ElevatedButton(
                 onPressed:
                     //タイマーリセット処理
@@ -104,3 +100,4 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     );
   }
 }
+
