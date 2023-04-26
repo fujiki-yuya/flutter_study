@@ -58,7 +58,6 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     return formattedTime;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
