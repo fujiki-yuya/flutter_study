@@ -9,12 +9,13 @@ class StopwatchScreen extends StatefulWidget {
   State<StopwatchScreen> createState() => StopwatchScreenState();
 }
 
-const SizedBox spacer = SizedBox(height: 24);
+const SizedBox _spacer = SizedBox(height: 24);
 
 class StopwatchScreenState extends State<StopwatchScreen> {
   final Stopwatch _stopwatch = Stopwatch();
   late Timer _timer;
   String _displayTime = "00:00:00:00";
+  final String _initialDisplayTime = "00:00:00:00";
 
   void _startStopwatch() {
     if (_stopwatch.isRunning) {
@@ -40,7 +41,7 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     _stopwatch.reset();
     _timer.cancel();
     setState(() {
-      _displayTime = "00:00:00:00";
+      _displayTime = _initialDisplayTime;
     });
   }
 
@@ -73,21 +74,21 @@ class StopwatchScreenState extends State<StopwatchScreen> {
                 _displayTime,
                 style: const TextStyle(fontSize: 40),
               ),
-              spacer,
+              _spacer,
               ElevatedButton(
                 onPressed:
                     //タイマースタート処理
                     _startStopwatch,
                 child: const Text('スタート'),
               ),
-              spacer,
+              _spacer,
               ElevatedButton(
                 onPressed:
                     //タイマーストップ処理
                     _stopStopwatch,
                 child: const Text('ストップ'),
               ),
-              spacer,
+              _spacer,
               ElevatedButton(
                 onPressed:
                     //タイマーリセット処理
