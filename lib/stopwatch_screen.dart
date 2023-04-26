@@ -41,7 +41,6 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     });
   }
 
-
   String _formatTime(int milliseconds) {
     int hundredths = (milliseconds / 10).truncate() % 100;
     int seconds = (milliseconds / 1000).truncate() % 60;
@@ -75,30 +74,27 @@ class StopwatchScreenState extends State<StopwatchScreen> {
                 height: 24,
               ),
               ElevatedButton(
-                onPressed: () {
-                  //タイマースタート処理
-                  _startStopwatch();
-                },
+                onPressed:
+                    //タイマースタート処理
+                    _startStopwatch,
                 child: const Text('スタート'),
               ),
               const SizedBox(
                 height: 24,
               ),
               ElevatedButton(
-                onPressed: () {
-                  //タイマーストップ処理
-                  _stopStopwatch();
-                },
+                onPressed:
+                    //タイマーストップ処理
+                    _stopStopwatch,
                 child: const Text('ストップ'),
               ),
               const SizedBox(
                 height: 24,
               ),
               ElevatedButton(
-                onPressed: () {
-                  //タイマーリセット処理
-                  _resetStopwatch();
-                },
+                onPressed:
+                    //タイマーリセット処理
+                    _resetStopwatch,
                 child: const Text('リセット'),
               ),
             ],
