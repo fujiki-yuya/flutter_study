@@ -45,7 +45,7 @@ class StopwatchScreenState extends State<StopwatchScreen> {
   }
 
   String _formatTime(Duration elapsed) {
-    int hundredths = elapsed.inMilliseconds % 1000 ~/ 10;
+    int hundredths = ((elapsed.inMilliseconds / 10).floor() % 100);
     int seconds = elapsed.inSeconds % 60;
     int minutes = elapsed.inMinutes % 60;
     int hours = elapsed.inHours;
@@ -57,6 +57,7 @@ class StopwatchScreenState extends State<StopwatchScreen> {
 
     return formattedTime;
   }
+
 
   @override
   Widget build(BuildContext context) {
