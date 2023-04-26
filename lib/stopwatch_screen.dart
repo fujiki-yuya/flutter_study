@@ -37,8 +37,9 @@ class StopwatchScreenState extends State<StopwatchScreen> {
   }
 
   void _resetStopwatch() {
-    _stopwatch.stop();
-    _stopwatch.reset();
+    _stopwatch
+      ..stop()
+      ..reset();
     _timer.cancel();
     setState(() {
       _displayTime = _initialDisplayTime;
