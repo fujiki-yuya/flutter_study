@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     }
 
     _stopwatch.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 1), (Timer timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (Timer timer) {
       setState(() {
         _displayTime =
             _formatTime(Duration(milliseconds: _stopwatch.elapsedMilliseconds));
@@ -77,7 +78,8 @@ class StopwatchScreenState extends State<StopwatchScreen> {
             children: [
               Text(
                 _displayTime,
-                style: const TextStyle(fontSize: 40),
+                style: const TextStyle(
+                    fontSize: 40, fontFeatures: [FontFeature.tabularFigures()]),
               ),
               _spacer,
               ElevatedButton(
