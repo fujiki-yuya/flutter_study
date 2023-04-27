@@ -12,8 +12,8 @@ class StopwatchScreen extends StatefulWidget {
 
 const SizedBox _spacer = SizedBox(height: 24);
 
-extension IntZeroPadding on int {
-  String get toStringWithZeroPadding => toString().padLeft(2, '0');
+extension _IntZeroPadding on int {
+  String get _toStringWithZeroPadding => toString().padLeft(2, '0');
 }
 
 class StopwatchScreenState extends State<StopwatchScreen> {
@@ -57,10 +57,10 @@ class StopwatchScreenState extends State<StopwatchScreen> {
     int minutes = elapsed.inMinutes % 60;
     int hours = elapsed.inHours;
 
-    String formattedTime = '${hours.toStringWithZeroPadding}:'
-        '${minutes.toStringWithZeroPadding}:'
-        '${seconds.toStringWithZeroPadding}:'
-        '${hundredths.toStringWithZeroPadding}';
+    String formattedTime = '${hours._toStringWithZeroPadding}:'
+        '${minutes._toStringWithZeroPadding}:'
+        '${seconds._toStringWithZeroPadding}:'
+        '${hundredths._toStringWithZeroPadding}';
 
     return formattedTime;
   }
