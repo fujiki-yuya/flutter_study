@@ -1,14 +1,27 @@
 import 'package:count_up_app/webview_screen.dart';
 import 'package:flutter/material.dart';
 
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
-  void _onSearchButtonPressed(BuildContext context, int jan) {
+  @override
+  SearchScreenState createState() => SearchScreenState();
+}
+
+class SearchScreenState extends State<SearchScreen> {
+  final TextEditingController _janController = TextEditingController();
+
+  void _onSearchButtonPressed(BuildContext context, String jan) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const WebViewScreen(url: 'https://www.amazon.co.jp/')),
+      MaterialPageRoute(
+          builder: (context) => WebViewScreen(
+              url: 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}')),
     );
+  }
+
+  String _convertJanToIsbn(String jan) {
+    return jan;
   }
 
   @override
@@ -28,6 +41,7 @@ class SearchScreen extends StatelessWidget {
                     child: Form(
                       //key: _formKey,
                       child: TextFormField(
+                        controller: _janController,
                         decoration: const InputDecoration(
                           labelText: 'JANコードを入力してください',
                         ),
@@ -36,7 +50,7 @@ class SearchScreen extends StatelessWidget {
                   ),
                   FloatingActionButton(
                     onPressed: () {
-                      _onSearchButtonPressed(context, 0);
+                      _onSearchButtonPressed(context, _janController.text);
                     },
                     child: const Text('検索'),
                   ),
