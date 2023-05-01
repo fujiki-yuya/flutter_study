@@ -21,7 +21,21 @@ class SearchScreenState extends State<SearchScreen> {
   }
 
   String _convertJanToIsbn(String jan) {
-    return jan;
+    if (jan.length == 13) {
+      String isbn = jan.substring(3, 12);
+      int checkDigit = 0;
+      for (int i = 0; i < 9; i++) {
+        checkDigit += int.parse(isbn[i]) * (i + 1);
+      }
+      checkDigit %= 11;
+      if (checkDigit == 10) {
+        isbn += 'X';
+      } else {
+        isbn += checkDigit.toString();
+      }
+      return isbn;
+    }
+    return '';
   }
 
   @override
