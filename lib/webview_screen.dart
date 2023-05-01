@@ -15,7 +15,10 @@ class WebViewScreenState extends State<WebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-      child: WebView(initialUrl: widget.url),
+      child: WebView(
+        initialUrl: widget.url,
+        javascriptMode: JavascriptMode.unrestricted,
+      ),
     ));
   }
 }
