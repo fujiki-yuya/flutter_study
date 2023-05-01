@@ -1,5 +1,6 @@
 import 'package:count_up_app/webview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -11,14 +12,17 @@ class SearchScreen extends StatefulWidget {
 class SearchScreenState extends State<SearchScreen> {
   final TextEditingController _janController = TextEditingController();
 
-  void _onSearchButtonPressed(BuildContext context, String jan) {
+  void _onSearchButtonPressed(String jan) {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WebViewScreen(
-              url: 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}')),
+        builder: (context) => WebViewScreen(
+            url: 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}'
+        ),
+      ),
     );
   }
+
 
   String _convertJanToIsbn(String jan) {
     if (jan.length == 13) {
@@ -36,6 +40,20 @@ class SearchScreenState extends State<SearchScreen> {
       return isbn;
     }
     return '';
+  }
+
+  Future<String> _scanBarcode() async {
+    String barcodeScanResult;
+    try {
+      barcodeScanResult = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+    } catch (e) {
+      barcodeScanResult = "Failed to get platform version.";
+    }
+
+    if (!mounted) return "";
+
+    return barcodeScanResult;
   }
 
   @override
@@ -64,12 +82,20 @@ class SearchScreenState extends State<SearchScreen> {
                   ),
                   FloatingActionButton(
                     onPressed: () {
-                      _onSearchButtonPressed(context, _janController.text);
+                      _onSearchButtonPressed(_janController.text);
                     },
                     child: const Text('検索'),
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 80),
+            ElevatedButton(
+              onPressed: () async {
+                String barcodeScanResult = await _scanBarcode();
+                _onSearchButtonPressed(barcodeScanResult);
+              },
+              child: const Text('バーコードスキャン'),
             ),
           ],
         ),
