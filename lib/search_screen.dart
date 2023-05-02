@@ -1,6 +1,6 @@
+import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:count_up_app/webview_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -17,12 +17,10 @@ class SearchScreenState extends State<SearchScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => WebViewScreen(
-            url: 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}'
-        ),
+            url: 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}'),
       ),
     );
   }
-
 
   String _convertJanToIsbn(String jan) {
     if (jan.length == 13) {
@@ -44,9 +42,10 @@ class SearchScreenState extends State<SearchScreen> {
 
   Future<String> _scanBarcode() async {
     String barcodeScanResult;
+
     try {
-      barcodeScanResult = await FlutterBarcodeScanner.scanBarcode(
-          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+      ScanResult result = await BarcodeScanner.scan();
+      barcodeScanResult = result.rawContent;
     } catch (e) {
       barcodeScanResult = "Failed to get platform version.";
     }
