@@ -40,19 +40,50 @@ class SearchScreenState extends State<SearchScreen> {
     return '';
   }
 
-  Future<String> _scanBarcode() async {
-    String barcodeScanResult;
-
+  Future<void> _scanBarcode() async {
+    String barcodeScanResult = '';
     try {
       ScanResult result = await BarcodeScanner.scan();
-      barcodeScanResult = result.rawContent;
+      if (!mounted) return;
+      setState(() {
+        barcodeScanResult = result.rawContent;
+      });
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('バーコードを読み取りました'),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await _scanBarcode();
+                },
+                child: const Text('スキャン'),
+              ),
+              TextButton(
+                onPressed: () {
+                  _onSearchButtonPressed(barcodeScanResult);
+                },
+                child: const Text('商品ページへ'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
     } catch (e) {
-      barcodeScanResult = "Failed to get platform version.";
+      if (!mounted) return;
+      setState(() {
+        barcodeScanResult = "Failed to get platform version.";
+      });
     }
-
-    if (!mounted) return "";
-
-    return barcodeScanResult;
   }
 
   @override
@@ -91,8 +122,7 @@ class SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 80),
             ElevatedButton(
               onPressed: () async {
-                String barcodeScanResult = await _scanBarcode();
-                _onSearchButtonPressed(barcodeScanResult);
+                await _scanBarcode();
               },
               child: const Text('バーコードスキャン'),
             ),
