@@ -12,7 +12,7 @@ class SearchScreen extends StatefulWidget {
 class SearchScreenState extends State<SearchScreen> {
   final TextEditingController _janController = TextEditingController();
 
-  void _onSearchButtonPressed(String jan) {
+  void _navigateToWebView(String jan) {
     String url = 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}';
 
     Navigator.push(
@@ -51,7 +51,7 @@ class SearchScreenState extends State<SearchScreen> {
       });
 
       // スキャンした時に商品ページを表示
-      _onSearchButtonPressed(barcodeScanResult);
+      _navigateToWebView(barcodeScanResult);
 
       showDialog(
         context: context,
@@ -109,7 +109,7 @@ class SearchScreenState extends State<SearchScreen> {
                   ),
                   FloatingActionButton(
                     onPressed: () {
-                      _onSearchButtonPressed(_janController.text);
+                      _navigateToWebView(_janController.text);
                     },
                     child: const Text('検索'),
                   ),
