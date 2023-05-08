@@ -13,11 +13,12 @@ class SearchScreenState extends State<SearchScreen> {
   final TextEditingController _janController = TextEditingController();
 
   void _onSearchButtonPressed(String jan) {
+    String url = 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}';
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => WebViewScreen(
-            url: 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}'),
+        builder: (context) => WebViewScreen(url: url),
       ),
     );
   }
@@ -49,6 +50,9 @@ class SearchScreenState extends State<SearchScreen> {
         barcodeScanResult = result.rawContent;
       });
 
+      // スキャンした時に商品ページを表示
+      _onSearchButtonPressed(barcodeScanResult);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -64,15 +68,9 @@ class SearchScreenState extends State<SearchScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  _onSearchButtonPressed(barcodeScanResult);
-                },
-                child: const Text('商品ページへ'),
-              ),
-              TextButton(
-                onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('閉じる'),
+                child: const Text('商品確認'),
               ),
             ],
           );
@@ -81,7 +79,7 @@ class SearchScreenState extends State<SearchScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        barcodeScanResult = "Failed to get platform version.";
+        barcodeScanResult = "プラットフォームのバージョンを取得できません";
       });
     }
   }
@@ -101,7 +99,6 @@ class SearchScreenState extends State<SearchScreen> {
                 children: [
                   Expanded(
                     child: Form(
-                      //key: _formKey,
                       child: TextFormField(
                         controller: _janController,
                         decoration: const InputDecoration(

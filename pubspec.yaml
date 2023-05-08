@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  lint: ^1.0.0
   webview_flutter: ^2.3.0
 
   barcode_scan2: any
