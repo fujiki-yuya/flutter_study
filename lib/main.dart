@@ -1,4 +1,4 @@
-import 'package:count_up_app/todo_list_screen.dart';
+import 'package:count_up_app/stopwatch_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TodoListScreen(),
+      home: const StopwatchScreen(),
     );
   }
 }
