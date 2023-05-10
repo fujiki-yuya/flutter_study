@@ -30,6 +30,7 @@ class SearchScreenState extends State<SearchScreen> {
       for (int i = 0; i < 9; i++) {
         checkDigit += int.parse(isbn[i]) * (i + 1);
       }
+
       checkDigit %= 11;
       if (checkDigit == 10) {
         isbn += 'X';
@@ -42,10 +43,12 @@ class SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _scanBarcode() async {
+    // 開いているキーボードを閉じるためにフォーカスを外す
+    FocusScope.of(context).unfocus();
+
     try {
       ScanResult result = await BarcodeScanner.scan();
       if (!mounted) return;
-
 
       // スキャンした時に商品ページを表示
       _navigateToWebView(result.rawContent);
