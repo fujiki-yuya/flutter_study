@@ -1,4 +1,5 @@
 import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:count_up_app/scan_result_dialog.dart';
 import 'package:count_up_app/webview_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -56,23 +57,14 @@ class SearchScreenState extends State<SearchScreen> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('バーコードを読み取りました'),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await _scanBarcode();
-                },
-                child: const Text('スキャン'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('商品確認'),
-              ),
-            ],
+          return ScanResultDialog(
+            onScanPressed: () async {
+              Navigator.of(context).pop();
+              await _scanBarcode();
+            },
+            onCheckPressed: () {
+              Navigator.of(context).pop();
+            },
           );
         },
       );
