@@ -42,16 +42,13 @@ class SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _scanBarcode() async {
-    String barcodeScanResult = '';
     try {
       ScanResult result = await BarcodeScanner.scan();
       if (!mounted) return;
-      setState(() {
-        barcodeScanResult = result.rawContent;
-      });
+
 
       // スキャンした時に商品ページを表示
-      _navigateToWebView(barcodeScanResult);
+      _navigateToWebView(result.rawContent);
 
       showDialog(
         context: context,
@@ -78,9 +75,6 @@ class SearchScreenState extends State<SearchScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        barcodeScanResult = "プラットフォームのバージョンを取得できません";
-      });
     }
   }
 
