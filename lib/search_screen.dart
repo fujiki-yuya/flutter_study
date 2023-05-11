@@ -1,4 +1,5 @@
 import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:count_up_app/jan_to_isbn_string_extension.dart';
 import 'package:count_up_app/scan_result_dialog.dart';
 import 'package:count_up_app/webview_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class SearchScreenState extends State<SearchScreen> {
   final TextEditingController _janController = TextEditingController();
 
   void _navigateToWebView(String jan) {
-    String url = 'https://www.amazon.co.jp/dp/${_convertJanToIsbn(jan)}';
+    String url = 'https://www.amazon.co.jp/dp/${jan.convertJanToIsbn()}';
 
     Navigator.push(
       context,
@@ -22,25 +23,6 @@ class SearchScreenState extends State<SearchScreen> {
         builder: (context) => WebViewScreen(url: url),
       ),
     );
-  }
-
-  String _convertJanToIsbn(String jan) {
-    if (jan.length == 13) {
-      String isbn = jan.substring(3, 12);
-      int checkDigit = 0;
-      for (int i = 0; i < 9; i++) {
-        checkDigit += int.parse(isbn[i]) * (i + 1);
-      }
-
-      checkDigit %= 11;
-      if (checkDigit == 10) {
-        isbn += 'X';
-      } else {
-        isbn += checkDigit.toString();
-      }
-      return isbn;
-    }
-    return '';
   }
 
   Future<void> _scanBarcode() async {
