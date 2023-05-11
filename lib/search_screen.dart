@@ -55,6 +55,11 @@ class SearchScreenState extends State<SearchScreen> {
       ScanResult result = await BarcodeScanner.scan();
       if (!mounted) return;
 
+      // バックボタンを押したらスキャンを終了する
+      if (result.rawContent.isEmpty) {
+        return;
+      }
+
       // スキャンした時に商品ページを表示
       _navigateToWebView(result.rawContent);
 
