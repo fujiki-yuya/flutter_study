@@ -3,8 +3,13 @@ extension JanToIsbnStringExtension on String {
     if (length == 13) {
       String isbn = substring(3, 12);
       int checkDigit = 0;
-      for (int i = 0; i < 9; i++) {
-        checkDigit += int.parse(isbn[i]) * (i + 1);
+
+      try {
+        for (int i = 0; i < 9; i++) {
+          checkDigit += int.parse(isbn[i]) * (i + 1);
+        }
+      } on FormatException {
+        throw const FormatException('不正なJANコードです');
       }
 
       checkDigit %= 11;
@@ -14,7 +19,8 @@ extension JanToIsbnStringExtension on String {
         isbn += checkDigit.toString();
       }
       return isbn;
+    } else {
+      throw const FormatException('不正なJANコードです');
     }
-    return '';
   }
 }
