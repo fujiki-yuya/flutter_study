@@ -15,15 +15,37 @@ class SearchScreenState extends State<SearchScreen> {
   final TextEditingController _janController = TextEditingController();
 
   void _navigateToWebView(String jan) {
-    String url = 'https://www.amazon.co.jp/dp/${jan.convertJanToIsbn()}';
+    try {
+      String isbn = jan.convertJanToIsbn();
+      String url = 'https://www.amazon.co.jp/dp/$isbn';
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => WebViewScreen(url: url),
-      ),
-    );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WebViewScreen(url: url),
+        ),
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('エラー'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
+
 
   Future<void> _scanBarcode() async {
     // 開いているキーボードを閉じるためにフォーカスを外す
