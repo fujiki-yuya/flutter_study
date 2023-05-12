@@ -46,7 +46,6 @@ class SearchScreenState extends State<SearchScreen> {
     }
   }
 
-
   Future<void> _scanBarcode() async {
     // 開いているキーボードを閉じるためにフォーカスを外す
     FocusScope.of(context).unfocus();
@@ -63,18 +62,14 @@ class SearchScreenState extends State<SearchScreen> {
       // スキャンした時に商品ページを表示
       _navigateToWebView(result.rawContent);
 
-      showDialog(
+      ScanResultDialog.show(
         context: context,
-        builder: (BuildContext context) {
-          return ScanResultDialog(
-            onScanPressed: () async {
-              Navigator.of(context).pop();
-              await _scanBarcode();
-            },
-            onCheckPressed: () {
-              Navigator.of(context).pop();
-            },
-          );
+        onScanPressed: () async {
+          Navigator.of(context).pop();
+          await _scanBarcode();
+        },
+        onCheckPressed: () {
+          Navigator.of(context).pop();
         },
       );
     } catch (e) {
