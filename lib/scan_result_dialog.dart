@@ -26,4 +26,20 @@ class ScanResultDialog extends StatelessWidget {
       ],
     );
   }
+
+  static show({
+    required BuildContext context,
+    required VoidCallback onScanPressed,
+    required VoidCallback onCheckPressed,
+  }) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ScanResultDialog(
+          onScanPressed: onScanPressed,
+          onCheckPressed: onCheckPressed,
+        );
+      },
+    );
+  }
 }
