@@ -79,44 +79,49 @@ class SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('書籍検索'),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(32),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Form(
-                      child: TextFormField(
-                        controller: _janController,
-                        decoration: const InputDecoration(
-                          labelText: 'JANコードを入力してください',
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('書籍検索'),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(32),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Form(
+                        child: TextFormField(
+                          controller: _janController,
+                          decoration: const InputDecoration(
+                            labelText: 'JANコードを入力してください',
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      _navigateToWebView(_janController.text);
-                    },
-                    child: const Text('検索'),
-                  ),
-                ],
+                    FloatingActionButton(
+                      onPressed: () {
+                        _navigateToWebView(_janController.text);
+                      },
+                      child: const Text('検索'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 80),
-            ElevatedButton(
-              onPressed: () async {
-                await _scanBarcode();
-              },
-              child: const Text('バーコードスキャン'),
-            ),
-          ],
+              const SizedBox(height: 80),
+              ElevatedButton(
+                onPressed: () async {
+                  await _scanBarcode();
+                },
+                child: const Text('バーコードスキャン'),
+              ),
+            ],
+          ),
         ),
       ),
     );
