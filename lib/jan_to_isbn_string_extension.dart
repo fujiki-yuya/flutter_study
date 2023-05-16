@@ -3,7 +3,6 @@ extension JanToIsbnStringExtension on String {
     int janCodeLength = 13;
     int startIsbnIndex = 3;
     int endIsbnIndex = 12;
-    int checkDigitLoopCount = 9;
     int checkDigitModulo = 11;
     int checkDigitXValue = 10;
 
@@ -11,10 +10,12 @@ extension JanToIsbnStringExtension on String {
       String isbn = substring(startIsbnIndex, endIsbnIndex);
       int checkDigit = 0;
 
+      List<String> isbnList = isbn.split('');
+
       try {
-        for (int i = 0; i < checkDigitLoopCount; i++) {
-          checkDigit += int.parse(isbn[i]) * (i + 1);
-        }
+        checkDigit = isbnList.asMap().entries.map((e) {
+          return int.parse(e.value) * (e.key + 1);
+        }).reduce((value, element) => value + element);
       } on FormatException {
         throw const FormatException('不正なJANコードです');
       }
