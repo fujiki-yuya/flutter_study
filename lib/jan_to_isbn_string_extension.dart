@@ -1,11 +1,11 @@
+int janCodeLength = 13;
+int startIsbnIndex = 3;
+int endIsbnIndex = 12;
+int checkDigitModulo = 11;
+int checkDigitXValue = 10;
+
 extension JanToIsbnStringExtension on String {
   String convertJanToIsbn() {
-    int janCodeLength = 13;
-    int startIsbnIndex = 3;
-    int endIsbnIndex = 12;
-    int checkDigitModulo = 11;
-    int checkDigitXValue = 10;
-
     if (length == janCodeLength) {
       String isbn = substring(startIsbnIndex, endIsbnIndex);
       int checkDigit = 0;
