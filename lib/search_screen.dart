@@ -17,8 +17,8 @@ class SearchScreenState extends State<SearchScreen> {
 
   void _navigateToWebView(String jan) {
     try {
-      String isbn = jan.convertJanToIsbn();
-      String url = 'https://www.amazon.co.jp/dp/$isbn';
+      final isbn = jan.convertJanToIsbn();
+      final url = 'https://www.amazon.co.jp/dp/$isbn';
 
       Navigator.push(
         context,
@@ -60,8 +60,10 @@ class SearchScreenState extends State<SearchScreen> {
     FocusScope.of(context).unfocus();
 
     try {
-      ScanResult result = await BarcodeScanner.scan();
-      if (!mounted) return;
+      final result = await BarcodeScanner.scan();
+      if (!mounted) {
+        return;
+      }
 
       // バックボタンを押したらスキャンを終了する
       if (result.rawContent.isEmpty) {
@@ -88,8 +90,8 @@ class SearchScreenState extends State<SearchScreen> {
 
   void _navigateToWebView2(String jan) {
     try {
-      String isbn = jan.convertJanToIsbn();
-      String url = 'https://www.amazon.co.jp/dp/$isbn';
+      final isbn = jan.convertJanToIsbn();
+      final url = 'https://www.amazon.co.jp/dp/$isbn';
 
       Navigator.pushReplacement(
         context,
@@ -131,8 +133,10 @@ class SearchScreenState extends State<SearchScreen> {
     FocusScope.of(context).unfocus();
 
     try {
-      ScanResult result = await BarcodeScanner.scan();
-      if (!mounted) return;
+      final result = await BarcodeScanner.scan();
+      if (!mounted) {
+        return;
+      }
 
       // バックボタンを押したらスキャンを終了する
       if (result.rawContent.isEmpty) {

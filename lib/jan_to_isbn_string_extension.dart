@@ -7,10 +7,10 @@ int checkDigitXValue = 10;
 extension JanToIsbnStringExtension on String {
   String convertJanToIsbn() {
     if (length == janCodeLength) {
-      String isbn = substring(startIsbnIndex, endIsbnIndex);
-      int checkDigit = 0;
+      var isbn = substring(startIsbnIndex, endIsbnIndex);
+      var checkDigit = 0;
 
-      List<String> isbnList = isbn.split('');
+      final isbnList = isbn.split('');
 
       try {
         checkDigit = isbnList.asMap().entries.map((e) {

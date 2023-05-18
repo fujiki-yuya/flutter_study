@@ -117,8 +117,6 @@ class TodoListScreenState extends State<TodoListScreen> {
                 ],
               ),
             ),
-
-            // ToDoリストを表示する
             Expanded(
               child: ListView.builder(
                 itemCount: _taskList.length,

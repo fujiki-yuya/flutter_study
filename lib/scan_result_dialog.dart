@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ScanResultDialog extends StatelessWidget {
-  final VoidCallback onScanPressed;
-  final VoidCallback onCheckPressed;
 
   const ScanResultDialog({
-    Key? key,
+    super.key,
     required this.onScanPressed,
     required this.onCheckPressed,
-  }) : super(key: key);
+  });
+  final VoidCallback onScanPressed;
+  final VoidCallback onCheckPressed;
 
   @override
   Widget build(BuildContext context) {
