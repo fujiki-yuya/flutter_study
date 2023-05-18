@@ -19,7 +19,7 @@ extension _IntZeroPadding on int {
 class StopwatchScreenState extends State<StopwatchScreen> {
   final Stopwatch _stopwatch = Stopwatch();
   late Timer _timer;
-  late String _displayTime = _formatTime(const Duration());
+  late String _displayTime = _formatTime(Duration.zero);
 
   void _startStopwatch() {
     if (_stopwatch.isRunning) {
@@ -46,7 +46,7 @@ class StopwatchScreenState extends State<StopwatchScreen> {
       ..reset();
     _timer.cancel();
     setState(() {
-      _displayTime = _formatTime(const Duration());
+      _displayTime = _formatTime(Duration.zero);
     });
   }
 
