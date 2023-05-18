@@ -27,7 +27,7 @@ class ScanResultDialog extends StatelessWidget {
     );
   }
 
-  static show({
+  static Future<void> show({
     required BuildContext context,
     required VoidCallback onScanPressed,
     required VoidCallback onCheckPressed,

@@ -3,6 +3,7 @@ import 'package:count_up_app/jan_to_isbn_string_extension.dart';
 import 'package:count_up_app/scan_result_dialog.dart';
 import 'package:count_up_app/webview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -34,7 +35,7 @@ class SearchScreenState extends State<SearchScreen> {
           ),
         ),
       );
-    } catch (e) {
+    } on FormatException catch (e) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -73,7 +74,7 @@ class SearchScreenState extends State<SearchScreen> {
       // スキャンした時に商品ページを表示
       _navigateToWebView(result.rawContent);
 
-      ScanResultDialog.show(
+      await ScanResultDialog.show(
         context: context,
         onScanPressed: () async {
           Navigator.of(context).pop();
@@ -83,8 +84,10 @@ class SearchScreenState extends State<SearchScreen> {
           Navigator.of(context).pop();
         },
       );
-    } catch (e) {
-      if (!mounted) return;
+    } on PlatformException catch (e) {
+      if (!mounted) {
+        return;
+      }
     }
   }
 
@@ -146,7 +149,9 @@ class SearchScreenState extends State<SearchScreen> {
       // スキャンした時に商品ページを表示
       _navigateToWebView2(result.rawContent);
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
     }
   }
 
