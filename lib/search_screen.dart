@@ -13,6 +13,7 @@ class SearchScreen extends StatefulWidget {
 
 class SearchScreenState extends State<SearchScreen> {
   final TextEditingController _janController = TextEditingController();
+  List<String> scannedProducts = [];
 
   void _navigateToWebView(String jan) {
     try {
@@ -22,7 +23,15 @@ class SearchScreenState extends State<SearchScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => WebViewScreen(url: url),
+          builder: (context) => WebViewScreen(
+            url: url,
+            onScanButtonPressed: _scanBarcode2,
+            onProductScanned: (newUrl) {
+              setState(() {
+                scannedProducts.add(newUrl);
+              });
+            },
+          ),
         ),
       );
     } catch (e) {
@@ -72,6 +81,66 @@ class SearchScreenState extends State<SearchScreen> {
           Navigator.of(context).pop();
         },
       );
+    } catch (e) {
+      if (!mounted) return;
+    }
+  }
+
+  void _navigateToWebView2(String jan) {
+    try {
+      String isbn = jan.convertJanToIsbn();
+      String url = 'https://www.amazon.co.jp/dp/$isbn';
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WebViewScreen(
+            url: url,
+            onScanButtonPressed: _scanBarcode2,
+            onProductScanned: (newUrl) {
+              setState(() {
+                scannedProducts.add(newUrl);
+              });
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('エラー'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _scanBarcode2() async {
+    // 開いているキーボードを閉じるためにフォーカスを外す
+    FocusScope.of(context).unfocus();
+
+    try {
+      ScanResult result = await BarcodeScanner.scan();
+      if (!mounted) return;
+
+      // バックボタンを押したらスキャンを終了する
+      if (result.rawContent.isEmpty) {
+        return;
+      }
+
+      // スキャンした時に商品ページを表示
+      _navigateToWebView2(result.rawContent);
     } catch (e) {
       if (!mounted) return;
     }
