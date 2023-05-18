@@ -46,17 +46,17 @@ class StopwatchScreenState extends State<StopwatchScreen> {
       ..reset();
     _timer.cancel();
     setState(() {
-      _displayTime = _formatTime(const Duration());;
+      _displayTime = _formatTime(const Duration());
     });
   }
 
   String _formatTime(Duration elapsed) {
-    int hundredths = ((elapsed.inMilliseconds / 10).floor() % 100);
-    int seconds = elapsed.inSeconds % 60;
-    int minutes = elapsed.inMinutes % 60;
-    int hours = elapsed.inHours;
+    final hundredths = (elapsed.inMilliseconds / 10).floor() % 100;
+    final seconds = elapsed.inSeconds % 60;
+    final minutes = elapsed.inMinutes % 60;
+    final hours = elapsed.inHours;
 
-    String formattedTime = '${hours._toStringWithZeroPadding}:'
+    final formattedTime = '${hours._toStringWithZeroPadding}:'
         '${minutes._toStringWithZeroPadding}:'
         '${seconds._toStringWithZeroPadding}:'
         '${hundredths._toStringWithZeroPadding}';
@@ -78,7 +78,9 @@ class StopwatchScreenState extends State<StopwatchScreen> {
               Text(
                 _displayTime,
                 style: const TextStyle(
-                    fontSize: 40, fontFeatures: [FontFeature.tabularFigures()]),
+                  fontSize: 40,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
               ),
               _spacer,
               ElevatedButton(
