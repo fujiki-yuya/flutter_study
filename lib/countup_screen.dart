@@ -15,7 +15,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
       if (_counter < 100) {
         _counter++;
       } else {
-        showDialog(
+        showDialog<AlertDialog>(
           context: context,
           builder: (context) {
             return AlertDialog(

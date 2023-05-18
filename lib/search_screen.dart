@@ -23,7 +23,7 @@ class SearchScreenState extends State<SearchScreen> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(
+        MaterialPageRoute<Widget>(
           builder: (context) => WebViewScreen(
             url: url,
             onScanButtonPressed: _scanBarcode2,
@@ -36,7 +36,7 @@ class SearchScreenState extends State<SearchScreen> {
         ),
       );
     } on FormatException catch (e) {
-      showDialog(
+      showDialog<AlertDialog>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -84,7 +84,7 @@ class SearchScreenState extends State<SearchScreen> {
           Navigator.of(context).pop();
         },
       );
-    } on PlatformException catch (e) {
+    } on PlatformException {
       if (!mounted) {
         return;
       }
@@ -98,7 +98,7 @@ class SearchScreenState extends State<SearchScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
+        MaterialPageRoute<Widget>(
           builder: (context) => WebViewScreen(
             url: url,
             onScanButtonPressed: _scanBarcode2,
@@ -110,8 +110,8 @@ class SearchScreenState extends State<SearchScreen> {
           ),
         ),
       );
-    } catch (e) {
-      showDialog(
+    } on FormatException catch (e) {
+      showDialog<AlertDialog>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -148,7 +148,7 @@ class SearchScreenState extends State<SearchScreen> {
 
       // スキャンした時に商品ページを表示
       _navigateToWebView2(result.rawContent);
-    } catch (e) {
+    } on PlatformException {
       if (!mounted) {
         return;
       }

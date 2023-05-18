@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
-
   const WebViewScreen({
     super.key,
     required this.url,
     required this.onScanButtonPressed,
     required this.onProductScanned,
   });
+
   final String url;
-  final Function onScanButtonPressed;
-  final Function(String) onProductScanned;
+  final VoidCallback onScanButtonPressed;
+  final ValueChanged<String> onProductScanned;
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
