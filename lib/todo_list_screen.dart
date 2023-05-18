@@ -31,7 +31,7 @@ class TodoListScreenState extends State<TodoListScreen> {
   void _editTask(int index) {
     editController.text = _taskList[index];
 
-    showDialog(
+    showDialog<AlertDialog>(
       context: context,
       builder: (context) {
         return AlertDialog(
