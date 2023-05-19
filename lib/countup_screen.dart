@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CountUpScreen extends StatefulWidget {
-  const CountUpScreen({Key? key}) : super(key: key);
+  const CountUpScreen({super.key});
 
   @override
   State<CountUpScreen> createState() => _CountUpScreenState();
@@ -15,20 +15,21 @@ class _CountUpScreenState extends State<CountUpScreen> {
       if (_counter < 100) {
         _counter++;
       } else {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('エラー'),
-                content: const Text('100が上限です'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              );
-            });
+        showDialog<AlertDialog>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('エラー'),
+              content: const Text('100が上限です'),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          },
+        );
       }
     });
   }
@@ -41,10 +42,10 @@ class _CountUpScreenState extends State<CountUpScreen> {
         title: const Text('カウントアップ'),
       ),
       body: Center(
-            child: Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+        child: Text(
+          '$_counter',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
