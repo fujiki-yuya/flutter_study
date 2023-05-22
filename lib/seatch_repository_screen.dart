@@ -49,6 +49,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                     const SizedBox(height: 16),
                     FloatingActionButton(
                       onPressed: () {
+                        FocusScope.of(context).unfocus();
                         getIssues(
                           ownerController.text,
                           repositoryController.text,
