@@ -1,3 +1,4 @@
+import 'package:count_up_app/get_issues.dart';
 import 'package:flutter/material.dart';
 
 class SearchRepositoryScreen extends StatefulWidget {
@@ -10,6 +11,7 @@ class SearchRepositoryScreen extends StatefulWidget {
 class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final ownerController = TextEditingController();
   final repositoryController = TextEditingController();
+  List<dynamic> issues = [];
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +49,46 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                     const SizedBox(height: 16),
                     FloatingActionButton(
                       onPressed: () {
-                        final owner = ownerController.text;
+                        getIssues(
+                          ownerController.text,
+                          repositoryController.text,
+                        ).then((getIssues) {
+                          setState(() {
+                            issues = getIssues;
+                          });
+                        }).catchError((error) {
+                          showDialog<AlertDialog>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('エラー'),
+                                content: const Text('リポジトリが見つかりません'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('閉じる'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        });
                       },
                       child: const Text('検索'),
                     ),
                   ],
+                ),
+              ),
+              Flexible(
+                child: ListView.builder(
+                  itemCount: issues.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(issues[index]['title'] as String),
+                    );
+                  },
                 ),
               ),
             ],
