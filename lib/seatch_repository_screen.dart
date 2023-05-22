@@ -8,7 +8,8 @@ class SearchRepositoryScreen extends StatefulWidget {
 }
 
 class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
-  final textEditingController = TextEditingController();
+  final ownerController = TextEditingController();
+  final repositoryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,27 +19,35 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('GitHubリポジトリ検索'),
+          title: const Text('GitHubリポジトリ情報'),
         ),
         body: SafeArea(
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(32),
-                child: Row(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Form(
-                        child: TextFormField(
-                          controller: textEditingController,
-                          decoration: const InputDecoration(
-                            labelText: 'リポジトリを入力してください',
-                          ),
+                    Form(
+                      child: TextFormField(
+                        controller: ownerController,
+                        decoration: const InputDecoration(
+                          labelText: 'オーナー名を入力してください',
                         ),
                       ),
                     ),
+                    Form(
+                      child: TextFormField(
+                        controller: repositoryController,
+                        decoration: const InputDecoration(
+                          labelText: 'リポジトリ名を入力してください',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     FloatingActionButton(
                       onPressed: () {
+                        final owner = ownerController.text;
                       },
                       child: const Text('検索'),
                     ),
