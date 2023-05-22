@@ -11,7 +11,7 @@ class SearchRepositoryScreen extends StatefulWidget {
 class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final ownerController = TextEditingController();
   final repositoryController = TextEditingController();
-  List<dynamic> issues = [];
+  List<Map<String, dynamic>> issues = [];
 
   @override
   Widget build(BuildContext context) {
