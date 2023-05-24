@@ -16,19 +16,26 @@ abstract class GitHubApi {
 
   @GET('/repos/{owner}/{repo}/pulls')
   Future<List<Pull>> getPulls(
-      @Path('owner') String owner,
-      @Path('repo') String repo,
-      );
+    @Path('owner') String owner,
+    @Path('repo') String repo,
+  );
 }
 
 @JsonSerializable()
 class Issue {
-  Issue({this.title});
+  Issue({
+    this.title,
+    this.pullRequest,
+  });
 
   factory Issue.fromJson(Map<String, dynamic> json) => _$IssueFromJson(json);
-  String? title;
+
+  final String? title;
+  final PullRequest? pullRequest;
+
   Map<String, dynamic> toJson() => _$IssueToJson(this);
 }
+
 
 @JsonSerializable()
 class Pull {
@@ -36,5 +43,29 @@ class Pull {
 
   factory Pull.fromJson(Map<String, dynamic> json) => _$PullFromJson(json);
   String? title;
+
   Map<String, dynamic> toJson() => _$PullToJson(this);
 }
+
+@JsonSerializable()
+class PullRequest {
+  PullRequest({
+    this.url,
+    this.htmlUrl,
+    this.diffUrl,
+    this.patchUrl,
+    this.mergedAt,
+  });
+
+  factory PullRequest.fromJson(Map<String, dynamic> json) =>
+      _$PullRequestFromJson(json);
+
+  final String? url;
+  final String? htmlUrl;
+  final String? diffUrl;
+  final String? patchUrl;
+  final String? mergedAt;
+
+  Map<String, dynamic> toJson() => _$PullRequestToJson(this);
+}
+
