@@ -73,7 +73,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                               ..clear()
                               ..addAll(pulls);
                           });
-                        } on Exception catch (e) {
+                        } on Exception {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('issueが取得できません'),
