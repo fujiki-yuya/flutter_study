@@ -1,5 +1,7 @@
-import 'package:count_up_app/get_issues.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
+import 'api/github_api.dart';
 
 class SearchRepositoryScreen extends StatefulWidget {
   const SearchRepositoryScreen({super.key});
@@ -11,7 +13,7 @@ class SearchRepositoryScreen extends StatefulWidget {
 class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final ownerController = TextEditingController();
   final repositoryController = TextEditingController();
-  List<Map<String, dynamic>> issues = [];
+  final List<Issue> _issues = [];
 
   @override
   Widget build(BuildContext context) {
@@ -48,34 +50,29 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                     ),
                     const SizedBox(height: 16),
                     FloatingActionButton(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        getIssues(
-                          ownerController.text,
-                          repositoryController.text,
-                        ).then((getIssues) {
-                          setState(() {
-                            issues = getIssues;
-                          });
-                        }).catchError((error) {
-                          showDialog<AlertDialog>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('エラー'),
-                                content: const Text('リポジトリが見つかりません'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('閉じる'),
-                                  ),
-                                ],
-                              );
-                            },
+                      onPressed: () async {
+                        try {
+                          FocusScope.of(context).unfocus();
+                          final dio = Dio();
+                          final gitHubApi = GitHubApi(dio);
+                          final issues = await gitHubApi.getIssues(
+                            ownerController.text,
+                            repositoryController.text,
                           );
-                        });
+
+                          setState(() {
+                            _issues
+                              ..clear()
+                              ..addAll(issues);
+                          });
+                        } on Exception catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('issueが取得できません'),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
                       },
                       child: const Text('検索'),
                     ),
@@ -84,11 +81,13 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
               ),
               Flexible(
                 child: ListView.builder(
-                  itemCount: issues.length,
+                  itemCount: _issues.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(issues[index]['title'] as String),
-                    );
+                    return _issues[index].title != null
+                        ? ListTile(
+                            title: Text(_issues[index].title ?? 'issueがありません'),
+                          )
+                        : Container();
                   },
                 ),
               ),
