@@ -17,6 +17,13 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final List<Pull> _pulls = [];
 
   @override
+  void dispose() {
+    super.dispose();
+    ownerController.dispose();
+    repositoryController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -56,10 +63,17 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                           FocusScope.of(context).unfocus();
                           final dio = Dio();
                           final gitHubApi = GitHubApi(dio);
-                          final issues = await gitHubApi.getIssues(
+                          var issues = await gitHubApi.getIssues(
                             ownerController.text,
                             repositoryController.text,
                           );
+
+                          issues = issues
+                              .where(
+                                (issue) => issue.pullRequest == null,
+                              )
+                              .toList();
+
                           final pulls = await gitHubApi.getPulls(
                             ownerController.text,
                             repositoryController.text,
@@ -107,7 +121,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                   itemBuilder: (context, index) {
                     return _pulls[index].title != null
                         ? ListTile(
-                            title: Text(_issues[index].title ?? 'issueがありません'),
+                            title: Text(_pulls[index].title ?? 'issueがありません'),
                           )
                         : Container();
                   },
