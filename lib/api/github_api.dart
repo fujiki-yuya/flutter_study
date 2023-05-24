@@ -13,14 +13,28 @@ abstract class GitHubApi {
     @Path('owner') String owner,
     @Path('repo') String repo,
   );
+
+  @GET('/repos/{owner}/{repo}/pulls')
+  Future<List<Pull>> getPulls(
+      @Path('owner') String owner,
+      @Path('repo') String repo,
+      );
 }
 
 @JsonSerializable()
 class Issue {
-
   Issue({this.title});
 
   factory Issue.fromJson(Map<String, dynamic> json) => _$IssueFromJson(json);
   String? title;
   Map<String, dynamic> toJson() => _$IssueToJson(this);
+}
+
+@JsonSerializable()
+class Pull {
+  Pull({this.title});
+
+  factory Pull.fromJson(Map<String, dynamic> json) => _$PullFromJson(json);
+  String? title;
+  Map<String, dynamic> toJson() => _$PullToJson(this);
 }
