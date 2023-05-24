@@ -14,6 +14,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final ownerController = TextEditingController();
   final repositoryController = TextEditingController();
   final List<Issue> _issues = [];
+  final List<Pull> _pulls = [];
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +60,18 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                             ownerController.text,
                             repositoryController.text,
                           );
-
+                          final pulls = await gitHubApi.getPulls(
+                            ownerController.text,
+                            repositoryController.text,
+                          );
                           setState(() {
                             _issues
                               ..clear()
                               ..addAll(issues);
+
+                            _pulls
+                              ..clear()
+                              ..addAll(pulls);
                           });
                         } on Exception catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -79,11 +87,25 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                   ],
                 ),
               ),
+              const Text('issue', style: TextStyle(fontSize: 40)),
               Flexible(
                 child: ListView.builder(
                   itemCount: _issues.length,
                   itemBuilder: (context, index) {
                     return _issues[index].title != null
+                        ? ListTile(
+                            title: Text(_issues[index].title ?? 'issueがありません'),
+                          )
+                        : Container();
+                  },
+                ),
+              ),
+              const Text('プルリクエスト', style: TextStyle(fontSize: 40)),
+              Flexible(
+                child: ListView.builder(
+                  itemCount: _pulls.length,
+                  itemBuilder: (context, index) {
+                    return _pulls[index].title != null
                         ? ListTile(
                             title: Text(_issues[index].title ?? 'issueがありません'),
                           )
