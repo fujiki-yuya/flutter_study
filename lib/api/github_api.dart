@@ -68,4 +68,3 @@ class PullRequest {
 
   Map<String, dynamic> toJson() => _$PullRequestToJson(this);
 }
-
