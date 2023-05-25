@@ -105,7 +105,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                         ? ListTile(
                             title: Text(_issues[index].title ?? 'issueがありません'),
                           )
-                        : Container();
+                        : const SizedBox.shrink();
                   },
                 ),
               ),
@@ -116,9 +116,9 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                   itemBuilder: (context, index) {
                     return _pulls[index].title != null
                         ? ListTile(
-                            title: Text(_pulls[index].title ?? 'issueがありません'),
+                            title: Text(_pulls[index].title ?? 'プルリクエストがありません'),
                           )
-                        : Container();
+                        : const SizedBox.shrink();
                   },
                 ),
               ),
