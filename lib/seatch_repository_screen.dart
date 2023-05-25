@@ -13,8 +13,8 @@ class SearchRepositoryScreen extends StatefulWidget {
 class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final ownerController = TextEditingController();
   final repositoryController = TextEditingController();
-  final List<Issue> _issues = [];
-  final List<Pull> _pulls = [];
+  List<Issue> _issues = [];
+  List<Pull> _pulls = [];
 
   @override
   void dispose() {
@@ -79,13 +79,8 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                             repositoryController.text,
                           );
                           setState(() {
-                            _issues
-                              ..clear()
-                              ..addAll(issues);
-
-                            _pulls
-                              ..clear()
-                              ..addAll(pulls);
+                            _issues = issues;
+                            _pulls = pulls;
                           });
                         } on Exception {
                           ScaffoldMessenger.of(context).showSnackBar(
