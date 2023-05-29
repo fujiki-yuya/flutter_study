@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'api/github_api.dart';
+import 'model/issue_result.dart';
+import 'model/pull.dart';
 
 class SearchRepositoryScreen extends StatefulWidget {
   const SearchRepositoryScreen({super.key});
@@ -73,7 +75,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                               duration: Duration(seconds: 3),
                             ),
                           );
-                          return IssueResult(items: []);
+                          //return IssueResult(items: []);
                         });
                         final pulls = await gitHubApi
                             .getPulls(
