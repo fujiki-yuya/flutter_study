@@ -75,7 +75,11 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                               duration: Duration(seconds: 3),
                             ),
                           );
-                          //return IssueResult(items: []);
+                          return const IssueResult(
+                            items: [],
+                            totalCount: null,
+                            incompleteResults: null,
+                          );
                         });
                         final pulls = await gitHubApi
                             .getPulls(
