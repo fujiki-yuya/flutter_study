@@ -4,22 +4,20 @@ import 'package:retrofit/http.dart';
 
 part 'github_api.g.dart';
 
-//api.github.com/search/issues?q=repo:fujiki-yuya/flutter_study+is:issue
-
 @RestApi(baseUrl: 'https://api.github.com')
 abstract class GitHubApi {
   factory GitHubApi(Dio dio, {String baseUrl}) = _GitHubApi;
 
   @GET('/search/issues')
   Future<IssueResult> searchIssues(
-      @Query('q') String query,
-      );
+    @Query('q') String query,
+  );
 
   @GET('/repos/{owner}/{repo}/pulls')
   Future<List<Pull>> getPulls(
-      @Path('owner') String owner,
-      @Path('repo') String repo,
-      );
+    @Path('owner') String owner,
+    @Path('repo') String repo,
+  );
 }
 
 @JsonSerializable()

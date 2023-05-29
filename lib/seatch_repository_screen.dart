@@ -64,7 +64,8 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                         final gitHubApi = GitHubApi(dio);
                         final issues = await gitHubApi
                             .searchIssues(
-                            'repo:${ownerController.text}/${repositoryController.text} is:issue')
+                          'repo:${ownerController.text}/${repositoryController.text} is:issue',
+                        )
                             .catchError((dynamic e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -72,6 +73,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                               duration: Duration(seconds: 3),
                             ),
                           );
+                          return IssueResult(items: []);
                         });
                         final pulls = await gitHubApi
                             .getPulls(
@@ -85,6 +87,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                               duration: Duration(seconds: 3),
                             ),
                           );
+                          return <Pull>[];
                         });
                         setState(() {
                           _issues = issues;
@@ -102,9 +105,10 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                   itemCount: _issues?.items?.length ?? 0,
                   itemBuilder: (context, index) {
                     final title = _issues?.items?[index].title;
-                    return title != null ? ListTile(
-                      title: Text(title),
-                    )
+                    return title != null
+                        ? ListTile(
+                            title: Text(title),
+                          )
                         : const SizedBox.shrink();
                   },
                 ),
@@ -116,8 +120,8 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                   itemBuilder: (context, index) {
                     return _pulls[index].title != null
                         ? ListTile(
-                      title: Text(_pulls[index].title ?? 'プルリクエストがありません'),
-                    )
+                            title: Text(_pulls[index].title ?? 'プルリクエストがありません'),
+                          )
                         : const SizedBox.shrink();
                   },
                 ),
