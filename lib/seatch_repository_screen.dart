@@ -13,7 +13,7 @@ class SearchRepositoryScreen extends StatefulWidget {
 class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final ownerController = TextEditingController();
   final repositoryController = TextEditingController();
-  List<Issue> _issues = [];
+  IssueResult? _issues;
   List<Pull> _pulls = [];
 
   @override
@@ -59,37 +59,37 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                     const SizedBox(height: 16),
                     FloatingActionButton(
                       onPressed: () async {
-                        try {
-                          FocusScope.of(context).unfocus();
-                          final dio = Dio();
-                          final gitHubApi = GitHubApi(dio);
-                          var issues = await gitHubApi.getIssues(
-                            ownerController.text,
-                            repositoryController.text,
-                          );
-
-                          issues = issues
-                              .where(
-                                (issue) => issue.pullRequest == null,
-                              )
-                              .toList();
-
-                          final pulls = await gitHubApi.getPulls(
-                            ownerController.text,
-                            repositoryController.text,
-                          );
-                          setState(() {
-                            _issues = issues;
-                            _pulls = pulls;
-                          });
-                        } on Exception {
+                        FocusScope.of(context).unfocus();
+                        final dio = Dio();
+                        final gitHubApi = GitHubApi(dio);
+                        final issues = await gitHubApi
+                            .searchIssues(
+                            'repo:${ownerController.text}/${repositoryController.text} is:issue')
+                            .catchError((dynamic e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('issueが取得できません'),
                               duration: Duration(seconds: 3),
                             ),
                           );
-                        }
+                        });
+                        final pulls = await gitHubApi
+                            .getPulls(
+                          ownerController.text,
+                          repositoryController.text,
+                        )
+                            .catchError((dynamic e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('issueが取得できません'),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        });
+                        setState(() {
+                          _issues = issues;
+                          _pulls = pulls;
+                        });
                       },
                       child: const Text('検索'),
                     ),
@@ -99,12 +99,12 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
               const Text('issue', style: TextStyle(fontSize: 40)),
               Flexible(
                 child: ListView.builder(
-                  itemCount: _issues.length,
+                  itemCount: _issues?.items?.length ?? 0,
                   itemBuilder: (context, index) {
-                    return _issues[index].title != null
-                        ? ListTile(
-                            title: Text(_issues[index].title ?? 'issueがありません'),
-                          )
+                    final title = _issues?.items?[index].title;
+                    return title != null ? ListTile(
+                      title: Text(title),
+                    )
                         : const SizedBox.shrink();
                   },
                 ),
@@ -116,8 +116,8 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                   itemBuilder: (context, index) {
                     return _pulls[index].title != null
                         ? ListTile(
-                            title: Text(_pulls[index].title ?? 'プルリクエストがありません'),
-                          )
+                      title: Text(_pulls[index].title ?? 'プルリクエストがありません'),
+                    )
                         : const SizedBox.shrink();
                   },
                 ),

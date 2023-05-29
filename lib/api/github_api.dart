@@ -4,38 +4,41 @@ import 'package:retrofit/http.dart';
 
 part 'github_api.g.dart';
 
+//api.github.com/search/issues?q=repo:fujiki-yuya/flutter_study+is:issue
+
 @RestApi(baseUrl: 'https://api.github.com')
 abstract class GitHubApi {
   factory GitHubApi(Dio dio, {String baseUrl}) = _GitHubApi;
 
-  @GET('/repos/{owner}/{repo}/issues')
-  Future<List<Issue>> getIssues(
-    @Path('owner') String owner,
-    @Path('repo') String repo,
-  );
+  @GET('/search/issues')
+  Future<IssueResult> searchIssues(
+      @Query('q') String query,
+      );
 
   @GET('/repos/{owner}/{repo}/pulls')
   Future<List<Pull>> getPulls(
-    @Path('owner') String owner,
-    @Path('repo') String repo,
-  );
+      @Path('owner') String owner,
+      @Path('repo') String repo,
+      );
 }
 
 @JsonSerializable()
-class Issue {
-  Issue({
-    this.title,
-    this.pullRequest,
+class IssueResult {
+  IssueResult({
+    this.totalCount,
+    this.incompleteResults,
+    this.items,
   });
 
-  factory Issue.fromJson(Map<String, dynamic> json) => _$IssueFromJson(json);
+  factory IssueResult.fromJson(Map<String, dynamic> json) =>
+      _$IssueResultFromJson(json);
 
-  final String? title;
-  final PullRequest? pullRequest;
+  final int? totalCount;
+  final bool? incompleteResults;
+  final List<Issue>? items;
 
-  Map<String, dynamic> toJson() => _$IssueToJson(this);
+  Map<String, dynamic> toJson() => _$IssueResultToJson(this);
 }
-
 
 @JsonSerializable()
 class Pull {
@@ -48,23 +51,12 @@ class Pull {
 }
 
 @JsonSerializable()
-class PullRequest {
-  PullRequest({
-    this.url,
-    this.htmlUrl,
-    this.diffUrl,
-    this.patchUrl,
-    this.mergedAt,
-  });
+class Issue {
+  Issue({this.title});
 
-  factory PullRequest.fromJson(Map<String, dynamic> json) =>
-      _$PullRequestFromJson(json);
+  factory Issue.fromJson(Map<String, dynamic> json) => _$IssueFromJson(json);
 
-  final String? url;
-  final String? htmlUrl;
-  final String? diffUrl;
-  final String? patchUrl;
-  final String? mergedAt;
+  final String? title;
 
-  Map<String, dynamic> toJson() => _$PullRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IssueToJson(this);
 }
