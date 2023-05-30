@@ -64,6 +64,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                         FocusScope.of(context).unfocus();
                         final dio = Dio();
                         final gitHubApi = GitHubApi(dio);
+
                         final issues = await gitHubApi
                             .searchIssues(
                           'repo:${ownerController.text}/${repositoryController.text} is:issue',
@@ -89,7 +90,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                             .catchError((dynamic e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('issueが取得できません'),
+                              content: Text('プルリクエストが取得できません'),
                               duration: Duration(seconds: 3),
                             ),
                           );
@@ -107,29 +108,36 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
               ),
               const Text('issue', style: TextStyle(fontSize: 40)),
               Flexible(
-                child: ListView.builder(
-                  itemCount: _issues?.items?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    final title = _issues?.items?[index].title;
-                    return title != null
-                        ? ListTile(
-                            title: Text(title),
-                          )
-                        : const SizedBox.shrink();
-                  },
+                child: ColoredBox(
+                  color: Colors.red,
+                  child: ListView.builder(
+                    itemCount: _issues?.items?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      final title = _issues?.items?[index].title;
+                      return title != null
+                          ? ListTile(
+                              title: Text(title),
+                            )
+                          : const SizedBox.shrink();
+                    },
+                  ),
                 ),
               ),
               const Text('プルリクエスト', style: TextStyle(fontSize: 40)),
               Flexible(
-                child: ListView.builder(
-                  itemCount: _pulls.length,
-                  itemBuilder: (context, index) {
-                    return _pulls[index].title != null
-                        ? ListTile(
-                            title: Text(_pulls[index].title ?? 'プルリクエストがありません'),
-                          )
-                        : const SizedBox.shrink();
-                  },
+                child: ColoredBox(
+                  color: Colors.blue,
+                  child: ListView.builder(
+                    itemCount: _pulls.length,
+                    itemBuilder: (context, index) {
+                      return _pulls[index].title != null
+                          ? ListTile(
+                              title:
+                                  Text(_pulls[index].title ?? 'プルリクエストがありません'),
+                            )
+                          : const SizedBox.shrink();
+                    },
+                  ),
                 ),
               ),
             ],
