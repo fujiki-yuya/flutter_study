@@ -17,6 +17,7 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
   final repositoryController = TextEditingController();
   IssueResult? _issues;
   List<Pull> _pulls = [];
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -40,57 +41,70 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(32),
-                child: Column(
-                  children: [
-                    Form(
-                      child: TextFormField(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
                         controller: ownerController,
                         decoration: const InputDecoration(
                           labelText: 'オーナー名を入力してください',
                         ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'オーナー名を入力してください';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    Form(
-                      child: TextFormField(
+                      TextFormField(
                         controller: repositoryController,
                         decoration: const InputDecoration(
                           labelText: 'リポジトリ名を入力してください',
                         ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'リポジトリ名を入力してください';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    FloatingActionButton(
-                      onPressed: () async {
-                        FocusScope.of(context).unfocus();
-                        final dio = Dio();
-                        final gitHubApi = GitHubApi(dio);
+                      const SizedBox(height: 16),
+                      FloatingActionButton(
+                        onPressed: () async {
+                          FocusScope.of(context).unfocus();
+                          if (_formKey.currentState!.validate()) {
+                            final dio = Dio();
+                            final gitHubApi = GitHubApi(dio);
 
-                        try {
-                          final apiResult = await Future.wait([
-                            gitHubApi.searchIssues(
-                              'repo:${ownerController.text}/${repositoryController.text} is:issue',
-                            ),
-                            gitHubApi.getPulls(
-                              ownerController.text,
-                              repositoryController.text,
-                            ),
-                          ]);
-                          setState(() {
-                            _issues = apiResult[0] as IssueResult?;
-                            _pulls = apiResult[1] as List<Pull>;
-                          });
-                        } on DioError catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('リポジトリ情報が取得できません: $e'),
-                              duration: const Duration(seconds: 3),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text('検索'),
-                    ),
-                  ],
+                            try {
+                              final apiResult = await Future.wait([
+                                gitHubApi.searchIssues(
+                                  'repo:${ownerController.text}/${repositoryController.text} is:issue',
+                                ),
+                                gitHubApi.getPulls(
+                                  ownerController.text,
+                                  repositoryController.text,
+                                ),
+                              ]);
+                              setState(() {
+                                _issues = apiResult[0] as IssueResult?;
+                                _pulls = apiResult[1] as List<Pull>;
+                              });
+                            } on DioError catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('リポジトリ情報が取得できません: $e'),
+                                  duration: const Duration(seconds: 3),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('検索'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const Text('issue', style: TextStyle(fontSize: 40)),
