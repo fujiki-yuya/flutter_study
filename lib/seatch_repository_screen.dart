@@ -65,41 +65,28 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                         final dio = Dio();
                         final gitHubApi = GitHubApi(dio);
 
-                        final issues = await gitHubApi
-                            .searchIssues(
-                          'repo:${ownerController.text}/${repositoryController.text} is:issue',
-                        )
-                            .catchError((dynamic e) {
+                        try {
+                          final apiResult = await Future.wait([
+                            gitHubApi.searchIssues(
+                              'repo:${ownerController.text}/${repositoryController.text} is:issue',
+                            ),
+                            gitHubApi.getPulls(
+                              ownerController.text,
+                              repositoryController.text,
+                            ),
+                          ]);
+                          setState(() {
+                            _issues = apiResult[0] as IssueResult?;
+                            _pulls = apiResult[1] as List<Pull>;
+                          });
+                        } on DioError catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('issueが取得できません'),
-                              duration: Duration(seconds: 3),
+                            SnackBar(
+                              content: Text('リポジトリ情報が取得できません: $e'),
+                              duration: const Duration(seconds: 3),
                             ),
                           );
-                          return const IssueResult(
-                            items: [],
-                            totalCount: null,
-                            incompleteResults: null,
-                          );
-                        });
-                        final pulls = await gitHubApi
-                            .getPulls(
-                          ownerController.text,
-                          repositoryController.text,
-                        )
-                            .catchError((dynamic e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('プルリクエストが取得できません'),
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-                          return <Pull>[];
-                        });
-                        setState(() {
-                          _issues = issues;
-                          _pulls = pulls;
-                        });
+                        }
                       },
                       child: const Text('検索'),
                     ),
