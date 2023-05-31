@@ -77,28 +77,27 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                             final dio = Dio();
                             final gitHubApi = GitHubApi(dio);
 
-                            try {
-                              final apiResult = await Future.wait([
-                                gitHubApi.searchIssues(
-                                  'repo:${ownerController.text}/${repositoryController.text} is:issue',
-                                ),
-                                gitHubApi.getPulls(
-                                  ownerController.text,
-                                  repositoryController.text,
-                                ),
-                              ]);
+                            await Future.wait([
+                              gitHubApi.searchIssues(
+                                'repo:${ownerController.text}/${repositoryController.text} is:issue',
+                              ),
+                              gitHubApi.getPulls(
+                                ownerController.text,
+                                repositoryController.text,
+                              ),
+                            ]).then((apiResult) {
                               setState(() {
                                 _issues = apiResult[0] as IssueResult?;
                                 _pulls = apiResult[1] as List<Pull>;
                               });
-                            } on DioError catch (e) {
+                            }).catchError((dynamic e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('リポジトリ情報が取得できません: $e'),
                                   duration: const Duration(seconds: 3),
                                 ),
                               );
-                            }
+                            });
                           }
                         },
                         child: const Text('検索'),
