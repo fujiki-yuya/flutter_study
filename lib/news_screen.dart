@@ -1,6 +1,7 @@
 import 'package:count_up_app/news_webview.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'api/news_api.dart';
 import 'model/news_result.dart';
@@ -24,7 +25,8 @@ class _NewsScreenState extends State<NewsScreen> {
   Future<void> getNews() async {
     final dio = Dio();
     final newsApi = NewsApi(dio);
-    final response = await newsApi.getNews();
+    final apiKey = dotenv.env['NEWS_API_KEY'];
+    final response = await newsApi.getNews(apiKey!);
     setState(() {
       _news = response;
     });
