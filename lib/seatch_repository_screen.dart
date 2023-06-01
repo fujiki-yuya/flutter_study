@@ -85,19 +85,22 @@ class _SearchRepositoryScreenState extends State<SearchRepositoryScreen> {
                                 ownerController.text,
                                 repositoryController.text,
                               ),
-                            ]).then((apiResult) {
-                              setState(() {
-                                _issues = apiResult[0] as IssueResult?;
-                                _pulls = apiResult[1] as List<Pull>;
-                              });
-                            }).catchError((dynamic e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('リポジトリ情報が取得できません: $e'),
-                                  duration: const Duration(seconds: 3),
-                                ),
-                              );
-                            });
+                            ]).then(
+                              (apiResult) {
+                                setState(() {
+                                  _issues = apiResult[0] as IssueResult?;
+                                  _pulls = apiResult[1] as List<Pull>;
+                                });
+                              },
+                              onError: (dynamic e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('リポジトリ情報が取得できません: $e'),
+                                    duration: const Duration(seconds: 3),
+                                  ),
+                                );
+                              },
+                            );
                           }
                         },
                         child: const Text('検索'),
