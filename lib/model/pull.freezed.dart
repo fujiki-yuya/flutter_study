@@ -91,7 +91,7 @@ class __$$_PullCopyWithImpl<$Res> extends _$PullCopyWithImpl<$Res, _$_Pull>
 /// @nodoc
 @JsonSerializable()
 class _$_Pull implements _Pull {
-  const _$_Pull({required this.title});
+  const _$_Pull({this.title});
 
   factory _$_Pull.fromJson(Map<String, dynamic> json) => _$$_PullFromJson(json);
 
@@ -130,7 +130,7 @@ class _$_Pull implements _Pull {
 }
 
 abstract class _Pull implements Pull {
-  const factory _Pull({required final String? title}) = _$_Pull;
+  const factory _Pull({final String? title}) = _$_Pull;
 
   factory _Pull.fromJson(Map<String, dynamic> json) = _$_Pull.fromJson;
 

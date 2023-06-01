@@ -120,9 +120,7 @@ class __$$_IssueResultCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_IssueResult implements _IssueResult {
   const _$_IssueResult(
-      {required this.totalCount,
-      required this.incompleteResults,
-      required final List<Issue>? items})
+      {this.totalCount, this.incompleteResults, final List<Issue>? items})
       : _items = items;
 
   factory _$_IssueResult.fromJson(Map<String, dynamic> json) =>
@@ -180,9 +178,9 @@ class _$_IssueResult implements _IssueResult {
 
 abstract class _IssueResult implements IssueResult {
   const factory _IssueResult(
-      {required final int? totalCount,
-      required final bool? incompleteResults,
-      required final List<Issue>? items}) = _$_IssueResult;
+      {final int? totalCount,
+      final bool? incompleteResults,
+      final List<Issue>? items}) = _$_IssueResult;
 
   factory _IssueResult.fromJson(Map<String, dynamic> json) =
       _$_IssueResult.fromJson;
