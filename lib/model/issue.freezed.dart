@@ -91,7 +91,7 @@ class __$$_IssueCopyWithImpl<$Res> extends _$IssueCopyWithImpl<$Res, _$_Issue>
 /// @nodoc
 @JsonSerializable()
 class _$_Issue implements _Issue {
-  const _$_Issue({required this.title});
+  const _$_Issue({this.title});
 
   factory _$_Issue.fromJson(Map<String, dynamic> json) =>
       _$$_IssueFromJson(json);
@@ -131,7 +131,7 @@ class _$_Issue implements _Issue {
 }
 
 abstract class _Issue implements Issue {
-  const factory _Issue({required final String? title}) = _$_Issue;
+  const factory _Issue({final String? title}) = _$_Issue;
 
   factory _Issue.fromJson(Map<String, dynamic> json) = _$_Issue.fromJson;
 
