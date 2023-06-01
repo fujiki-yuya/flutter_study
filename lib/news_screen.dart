@@ -26,9 +26,17 @@ class _NewsScreenState extends State<NewsScreen> {
     final dio = Dio();
     final newsApi = NewsApi(dio);
     final apiKey = dotenv.env['NEWS_API_KEY'];
-    final response = await newsApi.getNews(apiKey!);
-    setState(() {
-      _news = response;
+    await newsApi.getNews(apiKey!).then((response) {
+      setState(() {
+        _news = response;
+      });
+    }).catchError((dynamic e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('ニュースが取得できません: $e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
     });
   }
 
@@ -79,7 +87,20 @@ class _NewsScreenState extends State<NewsScreen> {
                               url: _news!.articles![index].url!,
                             ),
                           ),
-                        );
+                        ).catchError((dynamic e) {
+                          return AlertDialog(
+                            title: const Text('ニュースを表示できません'),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('閉じる'),
+                              ),
+                            ],
+                          );
+                        });
                       },
                     );
                   },
