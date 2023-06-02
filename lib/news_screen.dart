@@ -1,3 +1,4 @@
+import 'package:count_up_app/favorite_news_screen.dart';
 import 'package:count_up_app/news_webview.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final Dio _dio = Dio();
   late final NewsApi _newsApi;
-
+  bool _isFavorite = false;
   NewsResult? _news;
 
   @override
@@ -58,7 +59,28 @@ class _NewsScreenState extends State<NewsScreen> {
         title: const Text('ニュース一覧'),
         leading: IconButton(
           icon: const Icon(Icons.favorite),
-          onPressed: () {},
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute<Widget>(
+                builder: (context) => const FavoriteNewsScreen(favorites: [],
+                ),
+              ),
+            ).catchError((dynamic e) {
+              return AlertDialog(
+                title: const Text('ニュースを表示できません'),
+                content: Text(e.toString()),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('閉じる'),
+                  ),
+                ],
+              );
+            });
+          },
         ),
         actions: <Widget>[
           IconButton(
@@ -73,8 +95,11 @@ class _NewsScreenState extends State<NewsScreen> {
           children: [
             const SizedBox(height: 80),
             Flexible(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: _news?.articles?.length ?? 0,
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider();
+                },
                 itemBuilder: (context, index) {
                   final title = _news?.articles?[index].title;
                   return ListTile(
@@ -83,9 +108,14 @@ class _NewsScreenState extends State<NewsScreen> {
                     ),
                     trailing: GestureDetector(
                       onTapDown: (TapDownDetails details) {
-                        // お気に入りボタンが押された時の処理
+                        setState(() {
+                          _isFavorite = !_isFavorite;
+                        });
                       },
-                      child: const Icon(Icons.favorite),
+                      child: Icon(
+                        Icons.favorite,
+                        color: _isFavorite ? Colors.grey : Colors.red,
+                      ),
                     ),
                     onTap: () async {
                       final url = _news?.articles?[index].url;
