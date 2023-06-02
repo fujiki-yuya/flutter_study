@@ -1,10 +1,11 @@
-class Article {  // 追加したフィールド
 
+class Article {
   Article({
     required this.title,
     required this.url,
-    this.isFavorite = false,  // 初期値はfalseとする
+    this.isFavorite = false,
   });
+
   String title;
   String url;
   bool isFavorite;
