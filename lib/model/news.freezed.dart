@@ -102,7 +102,7 @@ class __$$_NewsCopyWithImpl<$Res> extends _$NewsCopyWithImpl<$Res, _$_News>
 /// @nodoc
 @JsonSerializable()
 class _$_News implements _News {
-  const _$_News({required this.title, required this.url});
+  const _$_News({this.title, this.url});
 
   factory _$_News.fromJson(Map<String, dynamic> json) => _$$_NewsFromJson(json);
 
@@ -144,8 +144,7 @@ class _$_News implements _News {
 }
 
 abstract class _News implements News {
-  const factory _News(
-      {required final String? title, required final String? url}) = _$_News;
+  const factory _News({final String? title, final String? url}) = _$_News;
 
   factory _News.fromJson(Map<String, dynamic> json) = _$_News.fromJson;
 

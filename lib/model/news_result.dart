@@ -9,9 +9,9 @@ part 'news_result.g.dart';
 @freezed
 class NewsResult with _$NewsResult {
   const factory NewsResult({
-    required String? status,
-    required int? totalResults,
-    required List<News>? articles,
+    String? status,
+    int? totalResults,
+    List<News>? articles,
   }) = _NewsResult;
 
   factory NewsResult.fromJson(Map<String, dynamic> json) =>

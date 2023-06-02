@@ -120,9 +120,7 @@ class __$$_NewsResultCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_NewsResult implements _NewsResult {
   const _$_NewsResult(
-      {required this.status,
-      required this.totalResults,
-      required final List<News>? articles})
+      {this.status, this.totalResults, final List<News>? articles})
       : _articles = articles;
 
   factory _$_NewsResult.fromJson(Map<String, dynamic> json) =>
@@ -179,9 +177,9 @@ class _$_NewsResult implements _NewsResult {
 
 abstract class _NewsResult implements NewsResult {
   const factory _NewsResult(
-      {required final String? status,
-      required final int? totalResults,
-      required final List<News>? articles}) = _$_NewsResult;
+      {final String? status,
+      final int? totalResults,
+      final List<News>? articles}) = _$_NewsResult;
 
   factory _NewsResult.fromJson(Map<String, dynamic> json) =
       _$_NewsResult.fromJson;

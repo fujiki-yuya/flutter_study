@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'Article.dart';
+import 'article.dart';
 
 class FavoriteNewsScreen extends StatefulWidget {
-
   const FavoriteNewsScreen({super.key, required this.favorites});
+
   final List<Article> favorites;
 
   @override
