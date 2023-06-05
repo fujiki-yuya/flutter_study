@@ -1,4 +1,3 @@
-
 class Article {
   Article({
     required this.title,

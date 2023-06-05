@@ -41,7 +41,6 @@ class _NewsScreenState extends State<NewsScreen> {
     }
     await _newsApi.getNews(apiKey).then(
       (NewsResult response) {
-        // Convert the list of News objects to a list of Article objects.
         final articles = response.articles?.map((News news) {
           return Article(
             title: news.title ?? '',

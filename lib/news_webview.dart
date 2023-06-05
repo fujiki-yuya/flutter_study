@@ -14,7 +14,6 @@ class NewsWebView extends StatefulWidget {
 }
 
 class _NewsWebViewState extends State<NewsWebView> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
