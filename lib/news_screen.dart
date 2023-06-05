@@ -46,11 +46,11 @@ class _NewsScreenState extends State<NewsScreen> {
           return Article(
             title: news.title ?? '',
             url: news.url ?? '',
+            isFavorite: false,
           );
         }).toList();
         setState(() {
-          _article =
-              articles;
+          _article = articles;
         });
       },
       onError: (dynamic e) {
@@ -129,14 +129,16 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                       trailing: GestureDetector(
                         onTap: () {
-                          setState(() {
-                            _article?[index].isFavorite =
-                                !_article![index].isFavorite;
-                          });
+                          if (_article != null) {
+                            setState(() {
+                              final article = _article![index];
+                              article.isFavorite = !article.isFavorite;
+                            });
+                          }
                         },
                         child: Icon(
                           Icons.favorite,
-                          color: _article![index].isFavorite
+                          color: _article?[index].isFavorite == true
                               ? Colors.red
                               : Colors.grey,
                         ),
