@@ -3,7 +3,7 @@ class Article {
   Article({
     required this.title,
     required this.url,
-    this.isFavorite = false,
+    required this.isFavorite,
   });
 
   String title;
