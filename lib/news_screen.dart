@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'api/news_api.dart';
 import 'article.dart';
+import 'favorite_news_screen.dart';
 import 'model/news.dart';
 import 'model/news_result.dart';
 
@@ -19,8 +20,6 @@ class _NewsScreenState extends State<NewsScreen> {
   final Dio _dio = Dio();
   late final NewsApi _newsApi;
   List<Article>? _article;
-
-  //final List<Article> _favorites = [];
 
   @override
   void initState() {
@@ -51,7 +50,7 @@ class _NewsScreenState extends State<NewsScreen> {
         }).toList();
         setState(() {
           _article =
-              articles; // Now we are setting _articles (of type List<Article>)
+              articles;
         });
       },
       onError: (dynamic e) {
@@ -76,27 +75,31 @@ class _NewsScreenState extends State<NewsScreen> {
             color: Colors.red,
           ),
           onPressed: () async {
-            // await Navigator.push(
-            //   context,
-            //   MaterialPageRoute<Widget>(
-            //     builder: (context) => FavoriteNewsScreen(
-            //       favorites: _article,
-            //     ),
-            //   ),
-            // ).catchError((dynamic e) {
-            //   return AlertDialog(
-            //     title: const Text('ニュースを表示できません'),
-            //     content: Text(e.toString()),
-            //     actions: [
-            //       TextButton(
-            //         onPressed: () {
-            //           Navigator.of(context).pop();
-            //         },
-            //         child: const Text('閉じる'),
-            //       ),
-            //     ],
-            //   );
-            // });
+            final favorites = (_article ?? [])
+                .where((article) => article.isFavorite)
+                .toList();
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute<Widget>(
+                builder: (context) => FavoriteNewsScreen(
+                  favorites: favorites,
+                ),
+              ),
+            ).catchError((dynamic e) {
+              return AlertDialog(
+                title: const Text('ニュースを表示できません'),
+                content: Text(e.toString()),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('閉じる'),
+                  ),
+                ],
+              );
+            });
           },
         ),
         actions: <Widget>[
