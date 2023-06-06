@@ -29,6 +29,16 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
             final article = widget.favorites[index];
             return ListTile(
               title: Text(article.title),
+              trailing: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    widget.favorites.removeAt(index);
+                  });
+                },
+                child: const Icon(
+                  Icons.delete,
+                ),
+              ),
               onTap: () {
                 Navigator.push(
                   context,
