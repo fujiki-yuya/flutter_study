@@ -6,12 +6,12 @@ part of 'news.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_News _$$_NewsFromJson(Map<String, dynamic> json) => _$_News(
+News _$NewsFromJson(Map<String, dynamic> json) => News(
       title: json['title'] as String?,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$$_NewsToJson(_$_News instance) => <String, dynamic>{
+Map<String, dynamic> _$NewsToJson(News instance) => <String, dynamic>{
       'title': instance.title,
       'url': instance.url,
     };
