@@ -19,7 +19,6 @@ Future<File> get _localFile async {
 Future<File> writeFavorites(List<Article> favorites) async {
   print('writeFavoritesが呼ばれました');
 
-
   final file = await _localFile;
 
   return file.writeAsString(json.encode(favorites));
