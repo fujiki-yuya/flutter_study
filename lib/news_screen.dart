@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'api/news_api.dart';
-import 'article.dart';
 import 'favorite_news_screen.dart';
+import 'file_helper.dart';
+import 'model/article.dart';
 import 'model/news.dart';
 import 'model/news_result.dart';
 
@@ -25,7 +26,7 @@ class _NewsScreenState extends State<NewsScreen> {
   void initState() {
     super.initState();
     _newsApi = NewsApi(_dio);
-    getNews();
+    getNews().then((_) => readFavoritesOnStart());
   }
 
   Future<void> getNews() async {
@@ -63,6 +64,36 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
+  Future<void> readFavoritesOnStart() async {
+    final favorites = await readFavorites();
+    if (!mounted) {
+      return;
+    }
+    for (final favorite in favorites) {
+      final index = _article?.indexWhere((item) => item.url == favorite.url);
+      if (index != null && index != -1) {
+        _article![index].isFavorite = true;
+      }
+    }
+    setState(() {});
+  }
+
+  void onFavoriteButtonPressed(int index) {
+    if (_article != null) {
+      setState(() {
+        final article = _article![index];
+        article.isFavorite = !article.isFavorite;
+
+        final favorites =
+            (_article ?? []).where((article) => article.isFavorite).toList();
+
+
+
+        writeFavorites(favorites);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,10 +105,10 @@ class _NewsScreenState extends State<NewsScreen> {
             color: Colors.red,
           ),
           onPressed: () async {
-            final favorites = (_article ?? [])
-                .where((article) => article.isFavorite)
-                .toList();
-
+            final favorites = await readFavorites();
+            if (!mounted) {
+              return;
+            }
             await Navigator.push(
               context,
               MaterialPageRoute<Widget>(
@@ -85,20 +116,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   favorites: favorites,
                 ),
               ),
-            ).catchError((dynamic e) {
-              return AlertDialog(
-                title: const Text('ニュースを表示できません'),
-                content: Text(e.toString()),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('閉じる'),
-                  ),
-                ],
-              );
-            });
+            );
           },
         ),
         actions: <Widget>[
@@ -128,12 +146,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                       trailing: GestureDetector(
                         onTap: () {
-                          if (_article != null) {
-                            setState(() {
-                              final article = _article![index];
-                              article.isFavorite = !article.isFavorite;
-                            });
-                          }
+                          onFavoriteButtonPressed(index);
                         },
                         child: Icon(
                           Icons.favorite,
