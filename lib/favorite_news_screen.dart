@@ -1,6 +1,7 @@
 import 'package:count_up_app/news_webview.dart';
 import 'package:flutter/material.dart';
 
+import 'file_helper.dart';
 import 'model/article.dart';
 
 class FavoriteNewsScreen extends StatefulWidget {
@@ -33,6 +34,7 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
                 onTap: () {
                   setState(() {
                     widget.favorites.removeAt(index);
+                    writeFavorites(widget.favorites);
                   });
                 },
                 child: const Icon(

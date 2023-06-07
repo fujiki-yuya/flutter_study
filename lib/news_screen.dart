@@ -41,14 +41,20 @@ class _NewsScreenState extends State<NewsScreen> {
       return;
     }
     await _newsApi.getNews(apiKey).then(
-      (NewsResult response) {
+      (NewsResult response) async {
+        final favorites = await readFavorites();
+
         final articles = response.articles?.map((News news) {
+          final isFavorite = favorites
+              .any((favoriteArticle) => favoriteArticle.url == news.url);
+
           return Article(
             title: news.title ?? '',
             url: news.url ?? '',
-            isFavorite: false,
+            isFavorite: isFavorite,
           );
         }).toList();
+
         setState(() {
           _article = articles;
         });
@@ -86,8 +92,6 @@ class _NewsScreenState extends State<NewsScreen> {
 
         final favorites =
             (_article ?? []).where((article) => article.isFavorite).toList();
-
-
 
         writeFavorites(favorites);
       });
