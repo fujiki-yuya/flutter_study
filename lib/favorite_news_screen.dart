@@ -1,7 +1,7 @@
 import 'package:count_up_app/news_webview.dart';
 import 'package:flutter/material.dart';
 
-import 'article.dart';
+import 'model/article.dart';
 
 class FavoriteNewsScreen extends StatefulWidget {
   const FavoriteNewsScreen({super.key, required this.favorites});
