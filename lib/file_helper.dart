@@ -17,8 +17,6 @@ Future<File> get _localFile async {
 }
 
 Future<File> writeFavorites(List<Article> favorites) async {
-  print('writeFavoritesが呼ばれました');
-
   final file = await _localFile;
 
   return file.writeAsString(json.encode(favorites));
@@ -35,7 +33,7 @@ Future<List<Article>> readFavorites() async {
     return jsonData
         .map((item) => Article.fromJson(item as Map<String, dynamic>))
         .toList();
-  } catch (e) {
+  } on IOException {
     return [];
   }
 }

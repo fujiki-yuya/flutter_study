@@ -10,7 +10,8 @@ class Article {
     required this.isFavorite,
   });
 
-  factory Article.fromJson(Map<String, dynamic> json) => _$ArticleFromJson(json);
+  factory Article.fromJson(Map<String, dynamic> json) =>
+      _$ArticleFromJson(json);
 
   String title;
   String url;

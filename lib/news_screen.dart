@@ -26,6 +26,7 @@ class _NewsScreenState extends State<NewsScreen> {
   void initState() {
     super.initState();
     _newsApi = NewsApi(_dio);
+    // アプリ起動時にお気に入りニュース読み込み
     getNews().then((_) => readFavoritesOnStart());
   }
 
@@ -40,6 +41,7 @@ class _NewsScreenState extends State<NewsScreen> {
       );
       return;
     }
+    // APIで取得したNewsResultオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
     await _newsApi.getNews(apiKey).then(
       (NewsResult response) async {
         final favorites = await readFavorites();
@@ -72,13 +74,12 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<void> readFavoritesOnStart() async {
     final favorites = await readFavorites();
-    if (!mounted) {
-      return;
-    }
     for (final favorite in favorites) {
+      //現在並んでいる記事とお気に入りの記事のurlが同じ場合にisFavoriteをtrueに
       final index = _article?.indexWhere((item) => item.url == favorite.url);
+      // indexWhereが条件に一致しない場合に -1 を返すため
       if (index != null && index != -1) {
-        _article![index].isFavorite = true;
+        _article?[index].isFavorite = true;
       }
     }
     setState(() {});
@@ -87,8 +88,8 @@ class _NewsScreenState extends State<NewsScreen> {
   void onFavoriteButtonPressed(int index) {
     if (_article != null) {
       setState(() {
-        final article = _article![index];
-        article.isFavorite = !article.isFavorite;
+        final article = _article?[index];
+        article?.isFavorite = !article.isFavorite;
 
         final favorites =
             (_article ?? []).where((article) => article.isFavorite).toList();
