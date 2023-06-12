@@ -144,8 +144,31 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: getNews,
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showDialog<void>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('ニュース検索'),
+                    content: TextField(
+                      onChanged: (value) {
+                        // 入力時の処理
+                      },
+                      decoration: const InputDecoration(hintText: '検索キーワードを入力'),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('検索'),
+                        onPressed: () {
+                          // 検索の処理
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
