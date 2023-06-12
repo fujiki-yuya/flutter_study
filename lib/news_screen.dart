@@ -140,7 +140,7 @@ class _NewsScreenState extends State<NewsScreen> {
               child: SafeArea(
                 child: ListView.separated(
                   itemCount: _article?.length ?? 0,
-                  separatorBuilder: (BuildContext context, int index) {
+                  separatorBuilder: (context, index) {
                     return const Divider();
                   },
                   itemBuilder: (context, index) {
