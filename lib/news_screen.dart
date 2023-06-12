@@ -8,7 +8,6 @@ import 'favorite_news_screen.dart';
 import 'file_helper.dart';
 import 'model/article.dart';
 import 'model/news.dart';
-import 'model/news_result.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -30,6 +29,28 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Future<void> getNews() async {
+    try {
+      final apiKey = await checkAPIKey();
+      final newsList = await fetchNews(apiKey);
+      final favorites = await fetchFavorites();
+      final articles = convertArticles(newsList, favorites);
+
+      setState(() {
+        _article = articles;
+      });
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('エラーです。$e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+    // 取得したニュースにお気に入り状態を反映
+    await readFavoritesOnStart();
+  }
+
+  Future<String> checkAPIKey() async {
     final apiKey = dotenv.env['NEWS_API_KEY'];
     if (apiKey == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -38,39 +59,35 @@ class _NewsScreenState extends State<NewsScreen> {
           duration: Duration(seconds: 3),
         ),
       );
-      return;
+      throw Exception('APIキーが設定されていません');
     }
+    return apiKey;
+  }
 
-    // APIで取得したNewsResultオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
-    await _newsApi.getNews(apiKey).then(
-      (NewsResult response) async {
-        final favorites = await readFavorites();
+  Future<List<News>> fetchNews(String apiKey) async {
+    final response = await _newsApi.getNews(apiKey);
+    if (response.articles == null) {
+      throw Exception('ニュース記事が取得できません');
+    }
+    return response.articles!;
+  }
 
-        final articles = response.articles?.map((News news) {
-          final isFavorite = favorites
-              .any((favoriteArticle) => favoriteArticle.url == news.url);
+  Future<List<Article>> fetchFavorites() async {
+    return readFavorites();
+  }
 
-          return Article(
-            title: news.title ?? '',
-            url: news.url ?? '',
-            isFavorite: isFavorite,
-          );
-        }).toList();
+  // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
+  List<Article> convertArticles(List<News> newsList, List<Article> favorites) {
+    return newsList.map((News news) {
+      final isFavorite =
+          favorites.any((favoriteArticle) => favoriteArticle.url == news.url);
 
-        setState(() {
-          _article = articles;
-        });
-      },
-      onError: (dynamic e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('ニュースが取得できません: $e'),
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      },
-    );
-    await readFavoritesOnStart();
+      return Article(
+        title: news.title ?? '',
+        url: news.url ?? '',
+        isFavorite: isFavorite,
+      );
+    }).toList();
   }
 
   Future<void> readFavoritesOnStart() async {
