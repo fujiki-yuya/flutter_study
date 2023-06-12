@@ -26,8 +26,7 @@ class _NewsScreenState extends State<NewsScreen> {
   void initState() {
     super.initState();
     _newsApi = NewsApi(_dio);
-    // アプリ起動時にお気に入りニュース読み込み
-    getNews().then((_) => readFavoritesOnStart());
+    getNews();
   }
 
   Future<void> getNews() async {
@@ -41,6 +40,7 @@ class _NewsScreenState extends State<NewsScreen> {
       );
       return;
     }
+
     // APIで取得したNewsResultオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
     await _newsApi.getNews(apiKey).then(
       (NewsResult response) async {
@@ -70,6 +70,7 @@ class _NewsScreenState extends State<NewsScreen> {
         );
       },
     );
+    await readFavoritesOnStart();
   }
 
   Future<void> readFavoritesOnStart() async {
