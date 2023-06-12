@@ -131,13 +131,13 @@ class _NewsScreenState extends State<NewsScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: getNews,
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Flexible(
-              child: SafeArea(
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: getNews,
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              Flexible(
                 child: ListView.separated(
                   itemCount: _article?.length ?? 0,
                   separatorBuilder: (context, index) {
@@ -190,8 +190,8 @@ class _NewsScreenState extends State<NewsScreen> {
                   },
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
