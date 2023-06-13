@@ -21,6 +21,14 @@ class _NewsScreenState extends State<NewsScreen> {
   late final NewsApi _newsApi;
   List<Article>? _article;
 
+  final _keywordController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _keywordController.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +40,28 @@ class _NewsScreenState extends State<NewsScreen> {
     try {
       final apiKey = await checkAPIKey();
       final newsList = await fetchNews(apiKey);
+      final favorites = await fetchFavorites();
+      final articles = convertArticles(newsList, favorites);
+
+      setState(() {
+        _article = articles;
+      });
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('エラーです。$e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+    // 取得したニュースにお気に入り状態を反映
+    await readFavoritesOnStart();
+  }
+
+  Future<void> getKeyWordNews(String keyword) async {
+    try {
+      final apiKey = await checkAPIKey();
+      final newsList = await fetchKeyWordNews(apiKey, keyword);
       final favorites = await fetchFavorites();
       final articles = convertArticles(newsList, favorites);
 
@@ -66,6 +96,14 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<List<News>> fetchNews(String apiKey) async {
     final response = await _newsApi.getNews(apiKey);
+    if (response.articles == null) {
+      throw Exception('ニュース記事が取得できません');
+    }
+    return response.articles!;
+  }
+
+  Future<List<News>> fetchKeyWordNews(String apiKey, String keyword) async {
+    final response = await _newsApi.getKeyWordNews(apiKey, keyword);
     if (response.articles == null) {
       throw Exception('ニュース記事が取得できません');
     }
@@ -162,6 +200,8 @@ class _NewsScreenState extends State<NewsScreen> {
                         child: const Text('検索'),
                         onPressed: () {
                           // 検索の処理
+                          getKeyWordNews(_keywordController.text);
+                          Navigator.of(context).pop();
                         },
                       ),
                     ],
