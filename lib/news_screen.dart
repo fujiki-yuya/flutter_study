@@ -88,16 +88,17 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<void> readFavoritesOnStart() async {
     final favorites = await readFavorites();
-    for (final favorite in favorites) {
-      //現在並んでいる記事とお気に入りの記事のurlが同じ場合にisFavoriteをtrueに
-      final index = _article?.indexWhere((item) => item.url == favorite.url);
-      // indexWhereが条件に一致しない場合に -1 を返すため
-      if (index != null && index != -1) {
-        //_article?[index].isFavorite = true;
-        final article = _article![index];
-        _article![index] = article.copyWith(isFavorite: true);
-      }
-    }
+
+    // お気に入りのURLをSetで取得する
+    final favoriteUrls = favorites.map((item) => item.url).toSet();
+
+    //それぞれのニュースがお気に入りURLと一致するか確認
+    _article = _article?.map((item) {
+      return item.copyWith(
+        isFavorite: favoriteUrls.contains(item.url),
+      );
+    }).toList();
+
     setState(() {});
   }
 
