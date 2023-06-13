@@ -97,7 +97,9 @@ class _NewsScreenState extends State<NewsScreen> {
       final index = _article?.indexWhere((item) => item.url == favorite.url);
       // indexWhereが条件に一致しない場合に -1 を返すため
       if (index != null && index != -1) {
-        _article?[index].isFavorite = true;
+        //_article?[index].isFavorite = true;
+        final article = _article![index];
+        _article![index] = article.copyWith(isFavorite: true);
       }
     }
     setState(() {});
@@ -106,8 +108,8 @@ class _NewsScreenState extends State<NewsScreen> {
   void onFavoriteButtonPressed(int index) {
     if (_article != null) {
       setState(() {
-        final article = _article?[index];
-        article?.isFavorite = !article.isFavorite;
+        final article = _article![index];
+        _article![index] = article.copyWith(isFavorite: !article.isFavorite);
 
         final favorites =
             (_article ?? []).where((article) => article.isFavorite).toList();
