@@ -40,7 +40,7 @@ class _NewsScreenState extends State<NewsScreen> {
     try {
       final apiKey = await checkAPIKey();
       final newsList = await fetchNews(apiKey);
-      final favorites = await fetchFavorites();
+      final favorites = await readFavorites();
       final articles = convertArticles(newsList, favorites);
 
       setState(() {
@@ -62,7 +62,7 @@ class _NewsScreenState extends State<NewsScreen> {
     try {
       final apiKey = await checkAPIKey();
       final newsList = await fetchKeyWordNews(apiKey, keyword);
-      final favorites = await fetchFavorites();
+      final favorites = await readFavorites();
       final articles = convertArticles(newsList, favorites);
 
       setState(() {
@@ -103,15 +103,14 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Future<List<News>> fetchKeyWordNews(String apiKey, String keyword) async {
-    final response = await _newsApi.getKeyWordNews(apiKey, keyword);
+    final response = await _newsApi.getKeyWordNews(
+      apiKey,
+      keyword,
+    );
     if (response.articles == null) {
       throw Exception('ニュース記事が取得できません');
     }
     return response.articles!;
-  }
-
-  Future<List<Article>> fetchFavorites() async {
-    return readFavorites();
   }
 
   // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
@@ -189,9 +188,12 @@ class _NewsScreenState extends State<NewsScreen> {
                 builder: (context) {
                   return AlertDialog(
                     title: const Text('ニュース検索'),
-                    content: TextField(
-                      onChanged: (value) {
+                    content: TextFormField(
+                      controller: _keywordController,
+                      onFieldSubmitted: (value) {
                         // 入力時の処理
+                        getKeyWordNews(_keywordController.text);
+                        Navigator.of(context).pop();
                       },
                       decoration: const InputDecoration(hintText: '検索キーワードを入力'),
                     ),
