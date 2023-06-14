@@ -19,6 +19,17 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('お気に入りニュース'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.delete_outlined),
+            onPressed: () {
+              setState(() {
+                widget.favorites.clear();
+                writeFavorites(widget.favorites);
+              });
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: ListView.separated(

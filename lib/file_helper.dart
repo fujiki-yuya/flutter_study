@@ -19,6 +19,12 @@ Future<File> get _localFile async {
 Future<File> writeFavorites(List<Article> favorites) async {
   final file = await _localFile;
 
+  // // 既存のリストを読み込む
+  // final oldFavorites = await readFavorites();
+  //
+  // // 既存のリストに新しいリストを追加する
+  // oldFavorites.addAll(favorites);
+
   return file.writeAsString(json.encode(favorites));
 }
 

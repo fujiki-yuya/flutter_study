@@ -12,9 +12,6 @@ abstract class NewsApi {
   @GET('top-headlines?country=jp&apiKey={key}')
   Future<NewsResult> getNews(@Path('key') String apiKey);
 
-  // @GET('everything?q=野球&apiKey={key}')
-  // Future<NewsResult> getNews(@Path('key') String apiKey);
-
   @GET('everything?q={q}&apiKey={key}')
   Future<NewsResult> getKeyWordNews(
       @Path('key') String apiKey,
