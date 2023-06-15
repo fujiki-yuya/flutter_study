@@ -34,15 +34,15 @@ class _NewsScreenState extends State<NewsScreen> {
   void initState() {
     super.initState();
     _newsApi = NewsApi(_dio);
-    getNews();
+    _getNews();
   }
 
-  Future<void> getNews() async {
+  Future<void> _getNews() async {
     try {
-      final apiKey = await checkAPIKey();
-      final newsList = await fetchNews(apiKey);
+      final apiKey = await _checkAPIKey();
+      final newsList = await _fetchNews(apiKey);
       final favorites = await readFavorites();
-      final articles = convertArticles(newsList, favorites);
+      final articles = _convertArticles(newsList, favorites);
 
       setState(() {
         _article = articles;
@@ -55,16 +55,14 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
       );
     }
-    // 取得したニュースにお気に入り状態を反映
-    await readFavoritesOnStart();
   }
 
-  Future<void> getKeyWordNews(String keyword) async {
+  Future<void> _getKeyWordNews(String keyword) async {
     try {
-      final apiKey = await checkAPIKey();
-      final newsList = await fetchKeyWordNews(apiKey, keyword);
+      final apiKey = await _checkAPIKey();
+      final newsList = await _fetchKeyWordNews(apiKey, keyword);
       final favorites = await readFavorites();
-      final articles = convertArticles(newsList, favorites);
+      final articles = _convertArticles(newsList, favorites);
 
       setState(() {
         _article = articles;
@@ -77,11 +75,9 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
       );
     }
-    // 取得したニュースにお気に入り状態を反映
-    await readFavoritesOnStart();
   }
 
-  Future<String> checkAPIKey() async {
+  Future<String> _checkAPIKey() async {
     final apiKey = dotenv.env['NEWS_API_KEY'];
     if (apiKey == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +91,7 @@ class _NewsScreenState extends State<NewsScreen> {
     return apiKey;
   }
 
-  Future<List<News>> fetchNews(String apiKey) async {
+  Future<List<News>> _fetchNews(String apiKey) async {
     final response = await _newsApi.getNews(apiKey);
     if (response.articles == null) {
       throw Exception('ニュース記事が取得できません');
@@ -103,7 +99,7 @@ class _NewsScreenState extends State<NewsScreen> {
     return response.articles!;
   }
 
-  Future<List<News>> fetchKeyWordNews(String apiKey, String keyword) async {
+  Future<List<News>> _fetchKeyWordNews(String apiKey, String keyword) async {
     final response = await _newsApi.getKeyWordNews(
       apiKey,
       keyword,
@@ -115,7 +111,7 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
-  List<Article> convertArticles(List<News> newsList, List<Article> favorites) {
+  List<Article> _convertArticles(List<News> newsList, List<Article> favorites) {
     return newsList.map((News news) {
       final isFavorite =
           favorites.any((favoriteArticle) => favoriteArticle.url == news.url);
@@ -128,24 +124,11 @@ class _NewsScreenState extends State<NewsScreen> {
     }).toList();
   }
 
-  Future<void> readFavoritesOnStart() async {
-    final favorites = await readFavorites();
-    for (final favorite in favorites) {
-      //現在並んでいる記事とお気に入りの記事のurlが同じ場合にisFavoriteをtrueに
-      final index = _article?.indexWhere((item) => item.url == favorite.url);
-      // indexWhereが条件に一致しない場合に -1 を返すため
-      if (index != null && index != -1) {
-        _article?[index].isFavorite = true;
-      }
-    }
-    setState(() {});
-  }
-
-  void onFavoriteButtonPressed(int index) {
+  void _onFavoriteButtonPressed(int index) {
     if (_article != null) {
       setState(() {
-        final article = _article?[index];
-        article?.isFavorite = !article.isFavorite;
+        final article = _article![index];
+        _article![index] = article.copyWith(isFavorite: !article.isFavorite);
 
         final favorites =
             (_article ?? []).where((article) => article.isFavorite).toList();
@@ -173,8 +156,7 @@ class _NewsScreenState extends State<NewsScreen> {
             await Navigator.push(
               context,
               MaterialPageRoute<Widget>(
-                builder: (context) => FavoriteNewsScreen(
-                  favorites: favorites,
+                builder: (context) => const FavoriteNewsScreen(
                 ),
               ),
             );
@@ -201,7 +183,7 @@ class _NewsScreenState extends State<NewsScreen> {
                         },
                         onFieldSubmitted: (value) {
                           if (_formKey.currentState!.validate()) {
-                            getKeyWordNews(_keywordController.text);
+                            _getKeyWordNews(_keywordController.text);
                             Navigator.of(context).pop();
                             _keywordController.clear();
                           }
@@ -215,7 +197,7 @@ class _NewsScreenState extends State<NewsScreen> {
                         child: const Text('検索'),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            getKeyWordNews(_keywordController.text);
+                            _getKeyWordNews(_keywordController.text);
                             Navigator.of(context).pop();
                             _keywordController.clear();
                           }
@@ -231,12 +213,12 @@ class _NewsScreenState extends State<NewsScreen> {
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: getNews,
+          onRefresh: _getNews,
           child: Column(
             children: [
-              const SizedBox(height: 16),
               Flexible(
                 child: ListView.separated(
+                  padding: const EdgeInsets.only(top: 16),
                   itemCount: _article?.length ?? 0,
                   separatorBuilder: (context, index) {
                     return const Divider();
@@ -249,7 +231,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                       trailing: GestureDetector(
                         onTap: () {
-                          onFavoriteButtonPressed(index);
+                          _onFavoriteButtonPressed(index);
                         },
                         child: Icon(
                           Icons.favorite,
@@ -260,29 +242,30 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                       onTap: () async {
                         final url = _article?[index].url;
-                        if (url != null) {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute<Widget>(
-                              builder: (context) => NewsWebView(
-                                url: url,
-                              ),
-                            ),
-                          ).catchError((dynamic e) {
-                            return AlertDialog(
-                              title: const Text('ニュースを表示できません'),
-                              content: Text(e.toString()),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('閉じる'),
-                                ),
-                              ],
-                            );
-                          });
+                        if (url == null) {
+                          return;
                         }
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute<Widget>(
+                            builder: (context) => NewsWebView(
+                              url: url,
+                            ),
+                          ),
+                        ).catchError((dynamic e) {
+                          return AlertDialog(
+                            title: const Text('ニュースを表示できません'),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('閉じる'),
+                              ),
+                            ],
+                          );
+                        });
                       },
                     );
                   },

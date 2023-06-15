@@ -1,11 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
-
 
 part 'news.g.dart';
 
 @JsonSerializable()
-class News{
-  News({
+@immutable
+class News {
+  const News({
     this.title,
     this.url,
   });
