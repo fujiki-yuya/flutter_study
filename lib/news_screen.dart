@@ -25,15 +25,18 @@ class _NewsScreenState extends State<NewsScreen> {
   void initState() {
     super.initState();
     _newsApi = NewsApi(_dio);
-    getNews();
+    _getNews();
   }
 
-  Future<void> getNews() async {
+  Future<void> _getNews() async {
     try {
-      final apiKey = await checkAPIKey();
-      final newsList = await fetchNews(apiKey);
+      final apiKey = await _checkAPIKey();
+      final newsList = await _fetchNews(apiKey);
       final favorites = await readFavorites();
-      final articles = convertArticles(newsList, favorites);
+      final articles = _convertArticles(newsList, favorites);
+
+      // 取得したニュースにお気に入り状態を反映
+      await _readFavoritesOnStart();
 
       setState(() {
         _article = articles;
@@ -46,11 +49,9 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
       );
     }
-    // 取得したニュースにお気に入り状態を反映
-    await readFavoritesOnStart();
   }
 
-  Future<String> checkAPIKey() async {
+  Future<String> _checkAPIKey() async {
     final apiKey = dotenv.env['NEWS_API_KEY'];
     if (apiKey == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,7 +65,7 @@ class _NewsScreenState extends State<NewsScreen> {
     return apiKey;
   }
 
-  Future<List<News>> fetchNews(String apiKey) async {
+  Future<List<News>> _fetchNews(String apiKey) async {
     final response = await _newsApi.getNews(apiKey);
     if (response.articles == null) {
       throw Exception('ニュース記事が取得できません');
@@ -73,7 +74,7 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
-  List<Article> convertArticles(List<News> newsList, List<Article> favorites) {
+  List<Article> _convertArticles(List<News> newsList, List<Article> favorites) {
     return newsList.map((News news) {
       final isFavorite =
           favorites.any((favoriteArticle) => favoriteArticle.url == news.url);
@@ -86,7 +87,7 @@ class _NewsScreenState extends State<NewsScreen> {
     }).toList();
   }
 
-  Future<void> readFavoritesOnStart() async {
+  Future<void> _readFavoritesOnStart() async {
     final favorites = await readFavorites();
 
     // お気に入りのURLをSetで取得する
@@ -102,7 +103,7 @@ class _NewsScreenState extends State<NewsScreen> {
     setState(() {});
   }
 
-  void onFavoriteButtonPressed(int index) {
+  void _onFavoriteButtonPressed(int index) {
     if (_article != null) {
       setState(() {
         final article = _article![index];
@@ -144,18 +145,18 @@ class _NewsScreenState extends State<NewsScreen> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: getNews,
+            onPressed: _getNews,
           ),
         ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: getNews,
+          onRefresh: _getNews,
           child: Column(
             children: [
-              const SizedBox(height: 16),
               Flexible(
                 child: ListView.separated(
+                  padding: const EdgeInsets.only(top: 16),
                   itemCount: _article?.length ?? 0,
                   separatorBuilder: (context, index) {
                     return const Divider();
@@ -168,7 +169,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                       trailing: GestureDetector(
                         onTap: () {
-                          onFavoriteButtonPressed(index);
+                          _onFavoriteButtonPressed(index);
                         },
                         child: Icon(
                           Icons.favorite,
