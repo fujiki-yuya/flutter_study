@@ -180,29 +180,30 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                       onTap: () async {
                         final url = _article?[index].url;
-                        if (url != null) {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute<Widget>(
-                              builder: (context) => NewsWebView(
-                                url: url,
-                              ),
-                            ),
-                          ).catchError((dynamic e) {
-                            return AlertDialog(
-                              title: const Text('ニュースを表示できません'),
-                              content: Text(e.toString()),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('閉じる'),
-                                ),
-                              ],
-                            );
-                          });
+                        if (url == null) {
+                          return;
                         }
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute<Widget>(
+                            builder: (context) => NewsWebView(
+                              url: url,
+                            ),
+                          ),
+                        ).catchError((dynamic e) {
+                          return AlertDialog(
+                            title: const Text('ニュースを表示できません'),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('閉じる'),
+                              ),
+                            ],
+                          );
+                        });
                       },
                     );
                   },
