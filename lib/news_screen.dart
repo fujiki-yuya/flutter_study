@@ -109,16 +109,10 @@ class _NewsScreenState extends State<NewsScreen> {
             color: Colors.red,
           ),
           onPressed: () async {
-            final favorites = await readFavorites();
-            if (!mounted) {
-              return;
-            }
             await Navigator.push(
               context,
               MaterialPageRoute<Widget>(
-                builder: (context) => FavoriteNewsScreen(
-                  favorites: favorites,
-                ),
+                builder: (context) => const FavoriteNewsScreen(),
               ),
             );
           },
