@@ -67,7 +67,7 @@ class _NewsScreenState extends State<NewsScreen> {
     if (response.articles == null) {
       throw Exception('ニュース記事が取得できません');
     }
-    return response.articles!;
+    return response.articles ?? [];
   }
 
   // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
@@ -127,64 +127,58 @@ class _NewsScreenState extends State<NewsScreen> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _getNews,
-          child: Column(
-            children: [
-              Flexible(
-                child: ListView.separated(
-                  padding: const EdgeInsets.only(top: 16),
-                  itemCount: _article?.length ?? 0,
-                  separatorBuilder: (context, index) {
-                    return const Divider();
-                  },
-                  itemBuilder: (context, index) {
-                    final title = _article?[index].title;
-                    return ListTile(
-                      title: Text(
-                        title ?? 'ニュースがありません',
-                      ),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          _onFavoriteButtonPressed(index);
-                        },
-                        child: Icon(
-                          Icons.favorite,
-                          color: _article?[index].isFavorite == true
-                              ? Colors.red
-                              : Colors.grey,
-                        ),
-                      ),
-                      onTap: () async {
-                        final url = _article?[index].url;
-                        if (url == null) {
-                          return;
-                        }
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute<Widget>(
-                            builder: (context) => NewsWebView(
-                              url: url,
-                            ),
-                          ),
-                        ).catchError((dynamic e) {
-                          return AlertDialog(
-                            title: const Text('ニュースを表示できません'),
-                            content: Text(e.toString()),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('閉じる'),
-                              ),
-                            ],
-                          );
-                        });
-                      },
-                    );
-                  },
+          child: ListView.separated(
+            padding: const EdgeInsets.only(top: 16),
+            itemCount: _article?.length ?? 0,
+            separatorBuilder: (context, index) {
+              return const Divider();
+            },
+            itemBuilder: (context, index) {
+              final title = _article?[index].title;
+              return ListTile(
+                title: Text(
+                  title ?? 'ニュースがありません',
                 ),
-              ),
-            ],
+                trailing: GestureDetector(
+                  onTap: () {
+                    _onFavoriteButtonPressed(index);
+                  },
+                  child: Icon(
+                    Icons.favorite,
+                    color: _article?[index].isFavorite == true
+                        ? Colors.red
+                        : Colors.grey,
+                  ),
+                ),
+                onTap: () async {
+                  final url = _article?[index].url;
+                  if (url == null) {
+                    return;
+                  }
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute<Widget>(
+                      builder: (context) => NewsWebView(
+                        url: url,
+                      ),
+                    ),
+                  ).catchError((dynamic e) {
+                    return AlertDialog(
+                      title: const Text('ニュースを表示できません'),
+                      content: Text(e.toString()),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('閉じる'),
+                        ),
+                      ],
+                    );
+                  });
+                },
+              );
+            },
           ),
         ),
       ),
