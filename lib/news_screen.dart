@@ -126,17 +126,30 @@ class _NewsScreenState extends State<NewsScreen> {
 
   void _onFavoriteButtonPressed(int index) {
     if (_article != null) {
-      setState(() {
-        final article = _article![index];
-        _article![index] = article.copyWith(isFavorite: !article.isFavorite);
-
-        final favorites =
-            (_article ?? []).where((article) => article.isFavorite).toList();
-
-        writeFavorites(favorites);
+      final article = _article?[index];
+      _handleFavoriteChange(article!).then((updatedArticle) {
+        setState(() {
+          _article?[index] = updatedArticle;
+        });
       });
     }
   }
+
+  Future<Article> _handleFavoriteChange(Article article) async {
+    final updatedArticle = article.copyWith(isFavorite: !article.isFavorite);
+
+    final favorites = await readFavorites();
+    if (updatedArticle.isFavorite) {
+      favorites.add(updatedArticle);
+    } else {
+      favorites.removeWhere((favorite) => favorite.url == updatedArticle.url);
+    }
+    await writeFavorites(favorites);
+
+    return updatedArticle;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -149,10 +162,6 @@ class _NewsScreenState extends State<NewsScreen> {
             color: Colors.red,
           ),
           onPressed: () async {
-            final favorites = await readFavorites();
-            if (!mounted) {
-              return;
-            }
             await Navigator.push(
               context,
               MaterialPageRoute<Widget>(
