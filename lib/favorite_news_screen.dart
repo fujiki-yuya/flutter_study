@@ -30,9 +30,7 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
             icon: const Icon(Icons.delete_outlined),
             onPressed: () async {
               // お気に入りをすべて削除
-              final favorites = await _favorites;
-              favorites.clear();
-              await writeFavorites(favorites);
+              await cleanFavorite();
               setState(() {
                 _favorites = readFavorites();
               });
@@ -99,5 +97,9 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
         );
       },
     );
+  }
+
+  Future<void> cleanFavorite() async {
+    await writeFavorites([]);
   }
 }
