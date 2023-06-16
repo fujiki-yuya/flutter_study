@@ -85,17 +85,15 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   void _onFavoriteButtonPressed(int index) {
-    if (_article != null) {
-      setState(() {
-        final article = _article![index];
-        _article![index] = article.copyWith(isFavorite: !article.isFavorite);
+    setState(() {
+      final article = _article![index];
+      _article![index] = article.copyWith(isFavorite: !article.isFavorite);
 
-        final favorites =
-            (_article ?? []).where((article) => article.isFavorite).toList();
+      final favorites =
+          (_article ?? []).where((article) => article.isFavorite).toList();
 
-        writeFavorites(favorites);
-      });
-    }
+      writeFavorites(favorites);
+    });
   }
 
   @override
@@ -141,6 +139,9 @@ class _NewsScreenState extends State<NewsScreen> {
                 ),
                 trailing: GestureDetector(
                   onTap: () {
+                    if (_article == null) {
+                      return;
+                    }
                     _onFavoriteButtonPressed(index);
                   },
                   child: Icon(
