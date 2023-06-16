@@ -23,17 +23,13 @@ Future<File> writeFavorites(List<Article> favorites) async {
 }
 
 Future<List<Article>> readFavorites() async {
-  try {
-    final file = await _localFile;
+  final file = await _localFile;
 
-    final contents = await file.readAsString();
+  final contents = await file.readAsString();
 
-    final jsonData = json.decode(contents) as List<dynamic>;
+  final jsonData = json.decode(contents) as List<dynamic>;
 
-    return jsonData
-        .map((item) => Article.fromJson(item as Map<String, dynamic>))
-        .toList();
-  } on IOException {
-    return [];
-  }
+  return jsonData
+      .map((item) => Article.fromJson(item as Map<String, dynamic>))
+      .toList();
 }
