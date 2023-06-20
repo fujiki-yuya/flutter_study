@@ -20,6 +20,7 @@ class _NewsScreenState extends State<NewsScreen> {
   final Dio _dio = Dio();
   late final NewsApi _newsApi;
   late final List<Article> _article;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -30,6 +31,10 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Future<void> _getNews() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       final apiKey = await _checkAPIKey();
       final newsList = await _fetchNews(apiKey);
@@ -49,6 +54,10 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
       );
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<String> _checkAPIKey() async {
@@ -114,6 +123,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 builder: (context) => const FavoriteNewsScreen(),
               ),
             );
+            await _getNews();
           },
         ),
         actions: <Widget>[
@@ -124,59 +134,61 @@ class _NewsScreenState extends State<NewsScreen> {
         ],
       ),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _getNews,
-          child: ListView.separated(
-            padding: const EdgeInsets.only(top: 16),
-            itemCount: _article.length,
-            separatorBuilder: (context, index) {
-              return const Divider();
-            },
-            itemBuilder: (context, index) {
-              final title = _article[index].title;
-              return ListTile(
-                title: Text(
-                  title,
-                ),
-                trailing: GestureDetector(
-                  onTap: () {
-                    _onFavoriteButtonPressed(index);
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
+                onRefresh: _getNews,
+                child: ListView.separated(
+                  padding: const EdgeInsets.only(top: 16),
+                  itemCount: _article.length,
+                  separatorBuilder: (context, index) {
+                    return const Divider();
                   },
-                  child: Icon(
-                    Icons.favorite,
-                    color: _article[index].isFavorite == true
-                        ? Colors.red
-                        : Colors.grey,
-                  ),
-                ),
-                onTap: () async {
-                  final url = _article[index].url;
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute<Widget>(
-                      builder: (context) => NewsWebView(
-                        url: url,
+                  itemBuilder: (context, index) {
+                    final title = _article[index].title;
+                    return ListTile(
+                      title: Text(
+                        title,
                       ),
-                    ),
-                  ).catchError((dynamic e) {
-                    return AlertDialog(
-                      title: const Text('ニュースを表示できません'),
-                      content: Text(e.toString()),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('閉じる'),
+                      trailing: GestureDetector(
+                        onTap: () {
+                          _onFavoriteButtonPressed(index);
+                        },
+                        child: Icon(
+                          Icons.favorite,
+                          color: _article[index].isFavorite == true
+                              ? Colors.red
+                              : Colors.grey,
                         ),
-                      ],
+                      ),
+                      onTap: () async {
+                        final url = _article[index].url;
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute<Widget>(
+                            builder: (context) => NewsWebView(
+                              url: url,
+                            ),
+                          ),
+                        ).catchError((dynamic e) {
+                          return AlertDialog(
+                            title: const Text('ニュースを表示できません'),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('閉じる'),
+                              ),
+                            ],
+                          );
+                        });
+                      },
                     );
-                  });
-                },
-              );
-            },
-          ),
-        ),
+                  },
+                ),
+              ),
       ),
     );
   }
