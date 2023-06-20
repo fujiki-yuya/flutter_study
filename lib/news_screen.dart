@@ -19,7 +19,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final Dio _dio = Dio();
   late final NewsApi _newsApi;
-  List<Article>? _article;
+  List<Article>  _article = [];
 
   @override
   void initState() {
@@ -64,10 +64,8 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<List<News>> _fetchNews(String apiKey) async {
     final response = await _newsApi.getNews(apiKey);
-    if (response.articles == null) {
-      throw Exception('ニュース記事が取得できません');
-    }
-    return response.articles ?? [];
+
+    return response.articles;
   }
 
   // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
@@ -86,11 +84,11 @@ class _NewsScreenState extends State<NewsScreen> {
 
   void _onFavoriteButtonPressed(int index) {
     setState(() {
-      final article = _article![index];
-      _article![index] = article.copyWith(isFavorite: !article.isFavorite);
+      final article = _article[index];
+      _article[index] = article.copyWith(isFavorite: !article.isFavorite);
 
       final favorites =
-          (_article ?? []).where((article) => article.isFavorite).toList();
+          _article.where((article) => article.isFavorite).toList();
 
       writeFavorites(favorites);
     });
@@ -127,35 +125,29 @@ class _NewsScreenState extends State<NewsScreen> {
           onRefresh: _getNews,
           child: ListView.separated(
             padding: const EdgeInsets.only(top: 16),
-            itemCount: _article?.length ?? 0,
+            itemCount: _article.length,
             separatorBuilder: (context, index) {
               return const Divider();
             },
             itemBuilder: (context, index) {
-              final title = _article?[index].title;
+              final title = _article[index].title;
               return ListTile(
                 title: Text(
-                  title ?? 'ニュースがありません',
+                  title,
                 ),
                 trailing: GestureDetector(
                   onTap: () {
-                    if (_article == null) {
-                      return;
-                    }
                     _onFavoriteButtonPressed(index);
                   },
                   child: Icon(
                     Icons.favorite,
-                    color: _article?[index].isFavorite == true
+                    color: _article[index].isFavorite == true
                         ? Colors.red
                         : Colors.grey,
                   ),
                 ),
                 onTap: () async {
-                  final url = _article?[index].url;
-                  if (url == null) {
-                    return;
-                  }
+                  final url = _article[index].url;
                   await Navigator.push(
                     context,
                     MaterialPageRoute<Widget>(
