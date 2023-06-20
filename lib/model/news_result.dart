@@ -11,7 +11,7 @@ class NewsResult {
   const NewsResult({
     this.status,
     this.totalResults,
-    this.articles,
+    required this.articles,
   });
 
   factory NewsResult.fromJson(Map<String, dynamic> json) =>
@@ -19,7 +19,7 @@ class NewsResult {
 
   final String? status;
   final int? totalResults;
-  final List<News>? articles;
+  final List<News> articles;
 
   Map<String, dynamic> toJson() => _$NewsResultToJson(this);
 }
