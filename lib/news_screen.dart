@@ -19,8 +19,17 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final Dio _dio = Dio();
   late final NewsApi _newsApi;
-  late final List<Article> _article;
+  late List<Article> _article;
   bool _isLoading = false;
+
+  final _keywordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _keywordController.dispose();
+  }
 
   @override
   void initState() {
@@ -60,6 +69,26 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
+  Future<void> _getKeyWordNews(String keyword) async {
+    try {
+      final apiKey = await _checkAPIKey();
+      final newsList = await _fetchKeyWordNews(apiKey, keyword);
+      final favorites = await readFavorites();
+      final articles = _convertArticles(newsList, favorites);
+
+      setState(() {
+        _article = articles;
+      });
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('エラーです。$e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   Future<String> _checkAPIKey() async {
     final apiKey = dotenv.env['NEWS_API_KEY'];
     if (apiKey == null) {
@@ -80,6 +109,14 @@ class _NewsScreenState extends State<NewsScreen> {
     return response.articles;
   }
 
+  Future<List<News>> _fetchKeyWordNews(String apiKey, String keyword) async {
+    final response = await _newsApi.getKeyWordNews(
+      apiKey,
+      keyword,
+    );
+    return response.articles;
+  }
+
   // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
   List<Article> _convertArticles(List<News> newsList, List<Article> favorites) {
     return newsList.map((News news) {
@@ -95,15 +132,26 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   void _onFavoriteButtonPressed(int index) {
-    setState(() {
-      final article = _article[index];
-      _article[index] = article.copyWith(isFavorite: !article.isFavorite);
-
-      final favorites =
-          _article.where((article) => article.isFavorite).toList();
-
-      writeFavorites(favorites);
+    final article = _article[index];
+    _handleFavoriteChange(article).then((updatedArticle) {
+      setState(() {
+        _article[index] = updatedArticle;
+      });
     });
+  }
+
+  Future<Article> _handleFavoriteChange(Article article) async {
+    final updatedArticle = article.copyWith(isFavorite: !article.isFavorite);
+
+    final favorites = await readFavorites();
+    if (updatedArticle.isFavorite) {
+      favorites.add(updatedArticle);
+    } else {
+      favorites.removeWhere((favorite) => favorite.url == updatedArticle.url);
+    }
+    await writeFavorites(favorites);
+
+    return updatedArticle;
   }
 
   @override
@@ -128,8 +176,50 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _getNews,
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showDialog<void>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('ニュース検索'),
+                    content: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        controller: _keywordController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '検索キーワードを入力してください';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) {
+                          if (_formKey.currentState!.validate()) {
+                            _getKeyWordNews(_keywordController.text);
+                            Navigator.of(context).pop();
+                            _keywordController.clear();
+                          }
+                        },
+                        decoration:
+                            const InputDecoration(hintText: '検索キーワードを入力'),
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('検索'),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _getKeyWordNews(_keywordController.text);
+                            Navigator.of(context).pop();
+                            _keywordController.clear();
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
