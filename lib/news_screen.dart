@@ -19,12 +19,13 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final Dio _dio = Dio();
   late final NewsApi _newsApi;
-  List<Article>  _article = [];
+  late final List<Article> _article;
 
   @override
   void initState() {
     super.initState();
     _newsApi = NewsApi(_dio);
+    _article = [];
     _getNews();
   }
 
@@ -36,7 +37,9 @@ class _NewsScreenState extends State<NewsScreen> {
       final articles = _convertArticles(newsList, favorites);
 
       setState(() {
-        _article = articles;
+        _article
+          ..clear()
+          ..addAll(articles);
       });
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
