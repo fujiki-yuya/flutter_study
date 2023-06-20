@@ -19,25 +19,22 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final Dio _dio = Dio();
   late final NewsApi _newsApi;
-  List<Article>? _article;
-
-  final _keywordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _keywordController.dispose();
-  }
+  late final List<Article> _article;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _newsApi = NewsApi(_dio);
+    _article = [];
     _getNews();
   }
 
   Future<void> _getNews() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       final apiKey = await _checkAPIKey();
       final newsList = await _fetchNews(apiKey);
@@ -45,7 +42,9 @@ class _NewsScreenState extends State<NewsScreen> {
       final articles = _convertArticles(newsList, favorites);
 
       setState(() {
-        _article = articles;
+        _article
+          ..clear()
+          ..addAll(articles);
       });
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -55,26 +54,10 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
       );
     }
-  }
 
-  Future<void> _getKeyWordNews(String keyword) async {
-    try {
-      final apiKey = await _checkAPIKey();
-      final newsList = await _fetchKeyWordNews(apiKey, keyword);
-      final favorites = await readFavorites();
-      final articles = _convertArticles(newsList, favorites);
-
-      setState(() {
-        _article = articles;
-      });
-    } on Exception catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('エラーです。$e'),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<String> _checkAPIKey() async {
@@ -93,21 +76,8 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<List<News>> _fetchNews(String apiKey) async {
     final response = await _newsApi.getNews(apiKey);
-    if (response.articles == null) {
-      throw Exception('ニュース記事が取得できません');
-    }
-    return response.articles!;
-  }
 
-  Future<List<News>> _fetchKeyWordNews(String apiKey, String keyword) async {
-    final response = await _newsApi.getKeyWordNews(
-      apiKey,
-      keyword,
-    );
-    if (response.articles == null) {
-      throw Exception('ニュース記事が取得できません');
-    }
-    return response.articles!;
+    return response.articles;
   }
 
   // Newsオブジェクトをお気に入り状態を持つArticleオブジェクトに入れる
@@ -125,31 +95,16 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   void _onFavoriteButtonPressed(int index) {
-    if (_article != null) {
-      final article = _article?[index];
-      _handleFavoriteChange(article!).then((updatedArticle) {
-        setState(() {
-          _article?[index] = updatedArticle;
-        });
-      });
-    }
+    setState(() {
+      final article = _article[index];
+      _article[index] = article.copyWith(isFavorite: !article.isFavorite);
+
+      final favorites =
+          _article.where((article) => article.isFavorite).toList();
+
+      writeFavorites(favorites);
+    });
   }
-
-  Future<Article> _handleFavoriteChange(Article article) async {
-    final updatedArticle = article.copyWith(isFavorite: !article.isFavorite);
-
-    final favorites = await readFavorites();
-    if (updatedArticle.isFavorite) {
-      favorites.add(updatedArticle);
-    } else {
-      favorites.removeWhere((favorite) => favorite.url == updatedArticle.url);
-    }
-    await writeFavorites(favorites);
-
-    return updatedArticle;
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -165,78 +120,35 @@ class _NewsScreenState extends State<NewsScreen> {
             await Navigator.push(
               context,
               MaterialPageRoute<Widget>(
-                builder: (context) => const FavoriteNewsScreen(
-                ),
+                builder: (context) => const FavoriteNewsScreen(),
               ),
             );
+            await _getNews();
           },
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              showDialog<void>(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('ニュース検索'),
-                    content: Form(
-                      key: _formKey,
-                      child: TextFormField(
-                        controller: _keywordController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return '検索キーワードを入力してください';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) {
-                          if (_formKey.currentState!.validate()) {
-                            _getKeyWordNews(_keywordController.text);
-                            Navigator.of(context).pop();
-                            _keywordController.clear();
-                          }
-                        },
-                        decoration:
-                            const InputDecoration(hintText: '検索キーワードを入力'),
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('検索'),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _getKeyWordNews(_keywordController.text);
-                            Navigator.of(context).pop();
-                            _keywordController.clear();
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+            icon: const Icon(Icons.refresh),
+            onPressed: _getNews,
           ),
         ],
       ),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _getNews,
-          child: Column(
-            children: [
-              Flexible(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
+                onRefresh: _getNews,
                 child: ListView.separated(
                   padding: const EdgeInsets.only(top: 16),
-                  itemCount: _article?.length ?? 0,
+                  itemCount: _article.length,
                   separatorBuilder: (context, index) {
                     return const Divider();
                   },
                   itemBuilder: (context, index) {
-                    final title = _article?[index].title;
+                    final title = _article[index].title;
                     return ListTile(
                       title: Text(
-                        title ?? 'ニュースがありません',
+                        title,
                       ),
                       trailing: GestureDetector(
                         onTap: () {
@@ -244,16 +156,13 @@ class _NewsScreenState extends State<NewsScreen> {
                         },
                         child: Icon(
                           Icons.favorite,
-                          color: _article?[index].isFavorite == true
+                          color: _article[index].isFavorite == true
                               ? Colors.red
                               : Colors.grey,
                         ),
                       ),
                       onTap: () async {
-                        final url = _article?[index].url;
-                        if (url == null) {
-                          return;
-                        }
+                        final url = _article[index].url;
                         await Navigator.push(
                           context,
                           MaterialPageRoute<Widget>(
@@ -280,9 +189,6 @@ class _NewsScreenState extends State<NewsScreen> {
                   },
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
