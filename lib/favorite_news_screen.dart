@@ -5,14 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'model/article.dart';
 import 'news_screen.dart';
 
+final favoritesFutureProvider = FutureProvider<List<Article>>(
+  (ref) => ref.read(newsStateProvider).getFavoriteArticles(),
+);
+
 class FavoriteNewsScreen extends ConsumerWidget {
   const FavoriteNewsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favoritesFutureProvider = FutureProvider<List<Article>>(
-        (ref) => ref.read(newsStateProvider).getFavoriteArticles());
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('お気に入りニュース'),
@@ -22,7 +23,6 @@ class FavoriteNewsScreen extends ConsumerWidget {
             onPressed: () async {
               // お気に入りをすべて削除
               await ref.read(newsStateProvider).removeAllFavorites();
-              ref.refresh(favoritesFutureProvider);
             },
           ),
         ],
@@ -43,8 +43,11 @@ class FavoriteNewsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _favoriteList(List<Article> favorites, WidgetRef ref,
-      FutureProvider<List<Article>> favoritesFutureProvider) {
+  Widget _favoriteList(
+    List<Article> favorites,
+    WidgetRef ref,
+    FutureProvider<List<Article>> favoritesFutureProvider,
+  ) {
     return ListView.separated(
       itemCount: favorites.length,
       separatorBuilder: (BuildContext context, int index) {
@@ -57,7 +60,6 @@ class FavoriteNewsScreen extends ConsumerWidget {
           trailing: GestureDetector(
             onTap: () async {
               ref.read(newsStateProvider).removeFromFavorites(article.url);
-              ref.refresh(favoritesFutureProvider);
             },
             child: const Icon(
               Icons.delete,

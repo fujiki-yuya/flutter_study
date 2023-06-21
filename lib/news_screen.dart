@@ -65,7 +65,6 @@ class NewsScreen extends ConsumerWidget {
                             .read(newsStateProvider)
                             .removeFromFavorites(articleId);
                       } else {
-
                         ref.read(newsStateProvider).addToFavorites(articleId);
                       }
                     },

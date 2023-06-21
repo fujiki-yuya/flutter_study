@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'api/news_api.dart';
 import 'file_helper.dart';
 import 'model/article.dart';
 import 'model/news_result.dart';
 
+@riverpod
 class NewsState extends ChangeNotifier {
   NewsState() {
     getNews();
