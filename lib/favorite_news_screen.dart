@@ -41,23 +41,16 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
       body: SafeArea(
         child: FutureBuilder<List<Article>>(
           future: _favorites,
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return const Center(child: CircularProgressIndicator());
-              case ConnectionState.done:
-                if (snapshot.hasError) {
-                  return Center(child: Text('エラーです ${snapshot.error}'));
-                } else if (!snapshot.hasData) {
-                  return const Center(child: Text('お気に入りのニュースがありません'));
-                } else {
-                  final favorites = snapshot.data!;
-                  return _favoriteList(favorites);
-                }
-              case ConnectionState.none:
-              case ConnectionState.active:
-                return const Center(child: Text('エラー'));
-            }
+          builder: (context, snapshot) => switch (snapshot.connectionState) {
+            ConnectionState.waiting =>
+              const Center(child: CircularProgressIndicator()),
+            ConnectionState.done when snapshot.hasError =>
+              Center(child: Text('エラーです ${snapshot.error}')),
+            ConnectionState.done when !snapshot.hasData =>
+              const Center(child: Text('お気に入りのニュースがありません')),
+            ConnectionState.done => _favoriteList(snapshot.data!),
+            ConnectionState.none => const Center(child: Text('エラー')),
+            ConnectionState.active => const Center(child: Text('エラー')),
           },
         ),
       ),
