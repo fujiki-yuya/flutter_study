@@ -1,27 +1,18 @@
 import 'package:count_up_app/news_webview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'file_helper.dart';
 import 'model/article.dart';
+import 'news_screen.dart';
 
-class FavoriteNewsScreen extends StatefulWidget {
+class FavoriteNewsScreen extends ConsumerWidget {
   const FavoriteNewsScreen({super.key});
 
   @override
-  State<FavoriteNewsScreen> createState() => _FavoriteNewsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favoritesFutureProvider = FutureProvider<List<Article>>(
+        (ref) => ref.read(newsStateProvider).getFavoriteArticles());
 
-class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
-  late Future<List<Article>> _favorites;
-
-  @override
-  void initState() {
-    super.initState();
-    _favorites = readFavorites();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('お気に入りニュース'),
@@ -30,41 +21,30 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
             icon: const Icon(Icons.delete_outlined),
             onPressed: () async {
               // お気に入りをすべて削除
-              await _cleanFavorite();
-              setState(() {
-                _favorites = readFavorites();
-              });
+              await ref.read(newsStateProvider).removeAllFavorites();
+              ref.refresh(favoritesFutureProvider);
             },
           ),
         ],
       ),
       body: SafeArea(
-        child: FutureBuilder<List<Article>>(
-          future: _favorites,
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return const Center(child: CircularProgressIndicator());
-              case ConnectionState.done:
-                if (snapshot.hasError) {
-                  return Center(child: Text('エラーです ${snapshot.error}'));
-                } else if (!snapshot.hasData) {
-                  return const Center(child: Text('お気に入りのニュースがありません'));
-                } else {
-                  final favorites = snapshot.data!;
-                  return _favoriteList(favorites);
-                }
-              case ConnectionState.none:
-              case ConnectionState.active:
-                return const Center(child: Text('エラー'));
-            }
+        child: Consumer(
+          builder: (context, WidgetRef ref, _) {
+            final favoritesSnap = ref.watch(favoritesFutureProvider);
+            return favoritesSnap.when(
+              data: (favorites) =>
+                  _favoriteList(favorites, ref, favoritesFutureProvider),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('エラーです $e')),
+            );
           },
         ),
       ),
     );
   }
 
-  Widget _favoriteList(List<Article> favorites) {
+  Widget _favoriteList(List<Article> favorites, WidgetRef ref,
+      FutureProvider<List<Article>> favoritesFutureProvider) {
     return ListView.separated(
       itemCount: favorites.length,
       separatorBuilder: (BuildContext context, int index) {
@@ -76,11 +56,8 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
           title: Text(article.title),
           trailing: GestureDetector(
             onTap: () async {
-              favorites.removeAt(index);
-              await writeFavorites(favorites);
-              setState(() {
-                _favorites = readFavorites();
-              });
+              ref.read(newsStateProvider).removeFromFavorites(article.url);
+              ref.refresh(favoritesFutureProvider);
             },
             child: const Icon(
               Icons.delete,
@@ -97,9 +74,5 @@ class _FavoriteNewsScreenState extends State<FavoriteNewsScreen> {
         );
       },
     );
-  }
-
-  Future<void> _cleanFavorite() async {
-    await writeFavorites([]);
   }
 }
