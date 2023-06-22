@@ -42,3 +42,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+ios/Podfile
+ios/Podfile.lock
+local.properties
+macos/Podfile
+macos/Podfile.lock
+api-keys.json
