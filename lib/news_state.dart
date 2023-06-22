@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'api/news_api.dart';
@@ -21,8 +20,8 @@ class NewsState extends ChangeNotifier {
   Future<void> getNews() async {
     final dio = Dio();
     final newsApi = NewsApi(dio);
-    final apiKey = dotenv.env['NEWS_API_KEY'];
-    final response = await newsApi.getNews(apiKey!);
+    const apiKey = String.fromEnvironment('NEWS_API_KEY');
+    final response = await newsApi.getNews(apiKey);
     news = response;
     notifyListeners();
   }

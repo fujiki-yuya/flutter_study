@@ -69,19 +69,19 @@ class NewsScreen extends ConsumerWidget {
                       }
                     },
                     child: Icon(
-                      state.isFavorite(articleId!)
-                          ? Icons.favorite
-                          : Icons.favorite_border,
+                      Icons.favorite,
+                      color: state.isFavorite(articleId!)
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   onTap: () async {
                     await Navigator.push(
                       context,
                       MaterialPageRoute<Widget>(
-                        builder: (context) =>
-                            NewsWebView(
-                              url: state.news!.articles[index].url!,
-                            ),
+                        builder: (context) => NewsWebView(
+                          url: state.news!.articles[index].url!,
+                        ),
                       ),
                     );
                   },
