@@ -6,6 +6,7 @@ part of 'github_api.dart';
 // RetrofitGenerator
 // **************************************************************************
 
+
 class _GitHubApi implements GitHubApi {
   _GitHubApi(
     this._dio, {
@@ -23,21 +24,18 @@ class _GitHubApi implements GitHubApi {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'q': query};
     final headers = <String, dynamic>{};
-    final result = await _dio.fetch<Map<String, dynamic>>(
-      _setStreamType<IssueResult>(
-        Options(
-          method: 'GET',
-          headers: headers,
-          extra: extra,
-        )
+    final result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<IssueResult>(Options(
+      method: 'GET',
+      headers: headers,
+      extra: extra,
+    )
             .compose(
               _dio.options,
               '/search/issues',
               queryParameters: queryParameters,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl),
-      ),
-    );
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl),),);
     final value = IssueResult.fromJson(result.data!);
     return value;
   }
@@ -50,21 +48,18 @@ class _GitHubApi implements GitHubApi {
     const extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final headers = <String, dynamic>{};
-    final result = await _dio.fetch<List<dynamic>>(
-      _setStreamType<List<Pull>>(
-        Options(
-          method: 'GET',
-          headers: headers,
-          extra: extra,
-        )
+    final result =
+        await _dio.fetch<List<dynamic>>(_setStreamType<List<Pull>>(Options(
+      method: 'GET',
+      headers: headers,
+      extra: extra,
+    )
             .compose(
               _dio.options,
               '/repos/$owner/$repo/pulls',
               queryParameters: queryParameters,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl),
-      ),
-    );
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl),),);
     final value = result.data!
         .map((dynamic i) => Pull.fromJson(i as Map<String, dynamic>))
         .toList();
