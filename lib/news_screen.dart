@@ -53,24 +53,24 @@ class NewsScreen extends ConsumerWidget {
               },
               itemBuilder: (context, index) {
                 final title = state.news?.articles[index].title;
-                final articleId = state.news?.articles[index].url;
+                final articleKey = state.news?.articles[index].title;
                 return ListTile(
                   title: Text(
                     title!,
                   ),
                   trailing: GestureDetector(
                     onTapDown: (TapDownDetails details) {
-                      if (state.isFavorite(articleId)) {
+                      if (state.isFavorite(articleKey)) {
                         ref
                             .read(newsStateProvider)
-                            .removeFromFavorites(articleId);
+                            .removeFromFavorites(articleKey);
                       } else {
-                        ref.read(newsStateProvider).addToFavorites(articleId);
+                        ref.read(newsStateProvider).addToFavorites(articleKey);
                       }
                     },
                     child: Icon(
                       Icons.favorite,
-                      color: state.isFavorite(articleId!)
+                      color: state.isFavorite(articleKey!)
                           ? Colors.red
                           : Colors.grey,
                     ),
@@ -80,7 +80,7 @@ class NewsScreen extends ConsumerWidget {
                       context,
                       MaterialPageRoute<Widget>(
                         builder: (context) => NewsWebView(
-                          url: state.news!.articles[index].url!,
+                          url: state.news!.articles[index].url,
                         ),
                       ),
                     );

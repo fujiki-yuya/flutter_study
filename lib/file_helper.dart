@@ -13,7 +13,16 @@ Future<String> get _localPath async {
 Future<File> get _localFile async {
   final path = await _localPath;
 
-  return File('$path/favorites.json');
+  final file = File('$path/favorites.json');
+
+  final exists = file.existsSync();
+
+  if (!exists) {
+    // jsonパースでエラーにならないように空の配列を書き込む
+    await file.writeAsString('[]');
+  }
+
+  return file;
 }
 
 Future<File> writeFavorites(List<Article> favorites) async {
