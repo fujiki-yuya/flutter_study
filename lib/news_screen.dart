@@ -3,9 +3,11 @@ import 'package:count_up_app/news_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'model/news_result.dart';
 import 'news_state.dart';
 
-final newsStateProvider = ChangeNotifierProvider((ref) => NewsState());
+final newsStateProvider =
+    StateNotifierProvider<NewsState, NewsResult?>((ref) => NewsState(ref.read));
 
 class NewsScreen extends ConsumerWidget {
   const NewsScreen({super.key});
