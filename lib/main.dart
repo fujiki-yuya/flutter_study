@@ -1,7 +1,7 @@
-import 'package:count_up_app/seatch_repository_screen.dart';
+import 'package:count_up_app/news_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -13,11 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GitHubリポジトリ検索',
+      title: 'ニュース',
       theme: ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: const SearchRepositoryScreen(),
+      home: const NewsScreen(),
     );
   }
 }
